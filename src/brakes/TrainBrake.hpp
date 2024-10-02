@@ -104,11 +104,14 @@ namespace godot {
             void _do_process_mover(TMoverParameters *mover, double delta) override;
 
         public:
+            void _enter_tree() override;
+            void _exit_tree() override;
+
             static void _bind_methods();
-            void _on_command_received(const String &command, const Variant &p1, const Variant &p2) override;
 
             void set_valve(TrainBrakeValve p_valve);
             TrainBrakeValve get_valve() const;
+
             void set_friction_elements_per_axle(int p_friction_elements_per_axle);
             int get_friction_elements_per_axle() const;
 
@@ -192,6 +195,11 @@ namespace godot {
 
             void set_rig_effectiveness(double p_rig_effectiveness);
             double get_rig_effectiveness() const;
+
+            void _on_command_brake_releaser(const Variant &p1, const Variant &p2);
+            void _on_command_brake_level_set(const Variant &p1, const Variant &p2);
+            void _on_command_brake_level_increase(const Variant &p1, const Variant &p2);
+            void _on_command_brake_level_decrease(const Variant &p1, const Variant &p2);
 
             TrainBrake();
             ~TrainBrake() override = default;

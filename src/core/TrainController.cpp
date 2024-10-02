@@ -8,6 +8,7 @@
 #include "../core/TrainPart.hpp"
 #include "../engines/TrainEngine.hpp"
 #include "../systems/TrainSecuritySystem.hpp"
+#include "../systems/TrainSystem.hpp"
 
 namespace godot {
 
@@ -25,6 +26,11 @@ namespace godot {
         ClassDB::bind_method(
                 D_METHOD("receive_command", "command", "p1", "p2"), &TrainController::receive_command,
                 DEFVAL(Variant()), DEFVAL(Variant()));
+
+        ClassDB::bind_method(
+                D_METHOD("broadcast_command", "command", "p1", "p2"), &TrainController::broadcast_command,
+                DEFVAL(Variant()), DEFVAL(Variant()));
+
 
         ClassDB::bind_method(D_METHOD("get_mover_state"), &TrainController::get_mover_state);
         ClassDB::bind_method(D_METHOD("update_mover"), &TrainController::update_mover);
@@ -126,6 +132,32 @@ namespace godot {
                                                  // disregarded; neglecting it may lead to errors
         }
     }
+    void TrainController::_enter_tree() {
+        if (Engine::get_singleton()->is_editor_hint()) {
+            return;
+        }
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        if (train_system != nullptr) {
+            train_system->register_train(this);
+        } else {
+            UtilityFunctions::push_error("TrainSystem singleton is nullptr!");
+        }
+    }
+
+    void TrainController::_exit_tree() {
+        if (Engine::get_singleton()->is_editor_hint()) {
+            return;
+        }
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        if (train_system != nullptr) {
+            train_system->unregister_train(this);
+        } else {
+            UtilityFunctions::push_error("TrainSystem singleton is nullptr!");
+        }
+    }
+
     void TrainController::_ready() {
         if (Engine::get_singleton()->is_editor_hint()) {
             return;
@@ -344,12 +376,25 @@ namespace godot {
         return state;
     }
 
-    void TrainController::receive_command(const StringName &command, const Variant &p1, const Variant &p2) {
-        _on_command_received(String(command), p1, p2);
+    void TrainController::emit_command_received_signal(const String &command, const Variant &p1, const Variant &p2) {
         emit_signal(COMMAND_RECEIVED, command, p1, p2);
+    }
+
+    void TrainController::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        train_system->broadcast_command(command, p1, p2);
+    }
+
+    void TrainController::receive_command(const StringName &command, const Variant &p1, const Variant &p2) {
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        train_system->send_command_to_train(this, String(command), p1, p2);
+        /*
+        _on_command_received(String(command), p1, p2);
         if (mover != nullptr) {
             _handle_mover_update();
-        }
+        }*/
     }
 
     void TrainController::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {

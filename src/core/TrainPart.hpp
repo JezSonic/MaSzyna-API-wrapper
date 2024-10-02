@@ -1,6 +1,20 @@
 #pragma once
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/node.hpp>
 #include "TrainController.hpp"
+
+#define BIND_TRAIN_COMMAND(command_name, exposed_method_name, callback)                                                \
+    ClassDB::bind_method(D_METHOD(exposed_method_name), callback);
+
+#define TRAIN_PART_REQUIRES_MOVER(variable)                                                                            \
+    if (train_controller_node == nullptr) {                                                                            \
+        return;                                                                                                        \
+    }                                                                                                                  \
+    TMoverParameters *variable = train_controller_node->get_mover();                                                   \
+    if (variable == nullptr) {                                                                                         \
+        return;                                                                                                        \
+    }
+
 
 namespace godot {
     class TrainPart : public Node {
@@ -29,7 +43,7 @@ namespace godot {
             /* Transfers data from Godot's node to original/internal Mover instance.
              * `mover` is always set */
 
-            virtual void _do_update_internal_mover(TMoverParameters *mover) = 0;
+            virtual void _do_update_internal_mover(TMoverParameters *mover);
 
             /* Transfers state from the original/internal Mover instance to Godot's Dictionary.
              * `mover` and `state` are always set
@@ -47,6 +61,9 @@ namespace godot {
             virtual void _process_mover(double delta);
             void on_command_received(const String &command, const Variant &p1, const Variant &p2);
             virtual void _on_command_received(const String &command, const Variant &p1, const Variant &p2);
+
+            void bind_command(const String &command, const Callable &callback);
+            void unbind_command(const String &command, const Callable &callback);
 
             void set_enabled(bool p_value);
             bool get_enabled();

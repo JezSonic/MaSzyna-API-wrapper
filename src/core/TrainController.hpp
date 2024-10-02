@@ -8,6 +8,7 @@ namespace godot {
     class TrainPart;
     class TrainEngine;
     class TrainSecuritySystem;
+    class TrainSystem;
 
 
     class TrainController final : public Node {
@@ -63,12 +64,17 @@ namespace godot {
             static const char *RADIO_CHANNEL_CHANGED;
 
             void _process(double delta) override;
+            void _enter_tree() override;
+            void _exit_tree() override;
             void _ready() override;
             Dictionary get_mover_state();
             void
             receive_command(const StringName &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
             void
             _on_command_received(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void emit_command_received_signal(
+                    const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
             void update_mover() const;
             void _on_train_part_config_changed(TrainPart *part) const;
 

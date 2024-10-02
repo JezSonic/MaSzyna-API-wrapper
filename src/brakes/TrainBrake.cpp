@@ -5,10 +5,10 @@
 #include "../core/TrainController.hpp"
 
 namespace godot {
-
     TrainBrake::TrainBrake() = default;
 
     void TrainBrake::_bind_methods() {
+
         ClassDB::bind_method(D_METHOD("set_valve"), &TrainBrake::set_valve);
         ClassDB::bind_method(D_METHOD("get_valve"), &TrainBrake::get_valve);
 
@@ -206,6 +206,67 @@ namespace godot {
         BIND_ENUM_CONSTANT(BRAKE_VALVE_CV1);
         BIND_ENUM_CONSTANT(BRAKE_VALVE_CV1_R);
         BIND_ENUM_CONSTANT(BRAKE_VALVE_OTHER);
+
+        ClassDB::bind_method(D_METHOD("_on_command_brake_releaser"), &TrainBrake::_on_command_brake_releaser);
+        ClassDB::bind_method(D_METHOD("_on_command_brake_level_set"), &TrainBrake::_on_command_brake_level_set);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_brake_level_increase"), &TrainBrake::_on_command_brake_level_increase);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_brake_level_decrease"), &TrainBrake::_on_command_brake_level_decrease);
+    }
+
+    void TrainBrake::_enter_tree() {
+        TrainPart::_enter_tree();
+        if (Engine::get_singleton()->is_editor_hint()) {
+            return;
+        }
+        bind_command("brake_releaser", Callable(this, "_on_command_brake_releaser"));
+        bind_command("brake_level_set", Callable(this, "_on_command_brake_level_set"));
+        bind_command("brake_level_increase", Callable(this, "_on_command_brake_level_increase"));
+        bind_command("brake_level_decrease", Callable(this, "_on_command_brake_level_decrease"));
+    }
+
+    void TrainBrake::_exit_tree() {
+        if (Engine::get_singleton()->is_editor_hint()) {
+            return;
+        }
+        unbind_command("brake_releaser", Callable(this, "_on_command_brake_releaser"));
+        unbind_command("brake_level_set", Callable(this, "_on_command_brake_level_set"));
+        unbind_command("brake_level_increase", Callable(this, "_on_command_brake_level_increase"));
+        unbind_command("brake_level_decrease", Callable(this, "_on_command_brake_level_decrease"));
+        TrainPart::_exit_tree();
+    }
+
+    void TrainBrake::_on_command_brake_releaser(const Variant &p1, const Variant &p2) {
+        TRAIN_PART_REQUIRES_MOVER(mover);
+        if (mover->Hamulec == nullptr) {
+            return;
+        }
+        mover->BrakeReleaser((bool)p1 ? 1 : 0);
+    }
+
+    void TrainBrake::_on_command_brake_level_set(const Variant &p1, const Variant &p2) {
+        TRAIN_PART_REQUIRES_MOVER(mover);
+        if (mover->Hamulec == nullptr) {
+            return;
+        }
+        mover->BrakeLevelSet((float)p1);
+    }
+
+    void TrainBrake::_on_command_brake_level_increase(const Variant &p1, const Variant &p2) {
+        TRAIN_PART_REQUIRES_MOVER(mover);
+        if (mover->Hamulec == nullptr) {
+            return;
+        }
+        mover->IncBrakeLevel();
+    }
+
+    void TrainBrake::_on_command_brake_level_decrease(const Variant &p1, Variant const &p2) {
+        TRAIN_PART_REQUIRES_MOVER(mover);
+        if (mover->Hamulec == nullptr) {
+            return;
+        }
+        mover->DecBrakeLevel();
     }
 
     void TrainBrake::_do_fetch_state_from_mover(TMoverParameters *mover, Dictionary &state) {
@@ -557,26 +618,5 @@ namespace godot {
 
     double TrainBrake::get_rig_effectiveness() const {
         return rig_effectiveness;
-    }
-
-    void TrainBrake::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {
-        TrainPart::_on_command_received(command, p1, p2);
-        if (train_controller_node == nullptr) {
-            return;
-        }
-        TMoverParameters *mover = train_controller_node->get_mover();
-        if (mover->Hamulec == nullptr) {
-            return;
-        }
-        if (command == "brake_releaser") {
-            mover->BrakeReleaser((bool)p1 ? 1 : 0);
-        } else if (command == "brake_level_set") {
-            UtilityFunctions::print("brake_level_set ", (float)p1);
-            mover->BrakeLevelSet((float)p1);
-        } else if (command == "brake_level_increase") {
-            mover->IncBrakeLevel();
-        } else if (command == "brake_level_decrease") {
-            mover->DecBrakeLevel();
-        }
     }
 } // namespace godot

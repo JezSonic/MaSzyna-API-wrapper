@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dbs1ga3ufq80u"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="TrainController" type="TrainController" parent="."]
+
+[node name="TrainDieselElectricEngine" type="TrainDieselElectricEngine" parent="TrainController"]
+
+[node name="TrainBrake" type="TrainBrake" parent="TrainController"]

@@ -12,6 +12,9 @@ var _t:float = 0.0
 func _ready() -> void:
     $%TrainName.text = "%s (type: %s)" % [train.name, train.type_name]
 
+    TrainSystem.broadcast_command("brake_level_set", 10)
+    print(TrainSystem.get_supported_commands())
+    TrainSystem.broadcast_command("lock_power")
 
 func draw_dictionary(dict: Dictionary, target: DebugPanel):
     var lines = []
@@ -52,7 +55,9 @@ func _process(delta: float) -> void:
 
 
 func _on_brake_level_value_changed(value):
-    train.receive_command("brake_level_set", value)
+    print("Dzingdzia bongdzia ", value)
+    TrainSystem.broadcast_command("brake_level_set", value, null)
+    print("TrainSystem ", TrainSystem)
 
 func _on_main_decrease_button_up():
     train.receive_command("main_controller_decrease")

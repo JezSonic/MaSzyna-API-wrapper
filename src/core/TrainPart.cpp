@@ -1,6 +1,7 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include "../systems/TrainSystem.hpp"
 #include "TrainController.hpp"
 #include "TrainPart.hpp"
 
@@ -8,6 +9,8 @@ namespace godot {
     void TrainPart::_bind_methods() {
         ClassDB::bind_method(D_METHOD("on_command_received"), &TrainPart::on_command_received);
         ClassDB::bind_method(D_METHOD("emit_config_changed_signal"), &TrainPart::emit_config_changed_signal);
+        ClassDB::bind_method(D_METHOD("bind_command", "command", "callable"), &TrainPart::bind_command);
+        ClassDB::bind_method(D_METHOD("unbind_command", "command", "callable"), &TrainPart::unbind_command);
         ClassDB::bind_method(D_METHOD("update_mover"), &TrainPart::update_mover);
         ClassDB::bind_method(D_METHOD("get_mover_state"), &TrainPart::get_mover_state);
 
@@ -32,6 +35,18 @@ namespace godot {
             train_controller_node->connect(TrainController::COMMAND_RECEIVED, Callable(this, "on_command_received"));
         }
         _dirty = true;
+    }
+
+    void TrainPart::bind_command(const String &command, const Callable &callback) {
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        train_system->bind_command(train_controller_node, command, callback);
+    }
+
+    void TrainPart::unbind_command(const String &command, const Callable &callback) {
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        train_system->unbind_command(train_controller_node, command, callback);
     }
 
     void TrainPart::emit_config_changed_signal() {
@@ -73,7 +88,7 @@ namespace godot {
         }
 
         if (!get_enabled()) {
-            if(enabled_changed) {
+            if (enabled_changed) {
                 enabled_changed = false;
                 emit_signal("enable_changed", false);
                 emit_signal("train_part_disabled");
@@ -90,7 +105,7 @@ namespace godot {
 
         _process_mover(delta);
 
-        if(enabled_changed) {
+        if (enabled_changed) {
             enabled_changed = false;
             emit_signal("enable_changed", enabled);
             emit_signal(enabled ? "train_part_enabled" : "train_part_disabled");
@@ -107,6 +122,8 @@ namespace godot {
         }
     }
 
+    void TrainPart::_do_update_internal_mover(TMoverParameters *mover) {};
+
     void TrainPart::update_mover() {
         if (train_controller_node != nullptr) {
             TMoverParameters *mover = train_controller_node->get_mover();
@@ -121,7 +138,7 @@ namespace godot {
     }
 
     Dictionary TrainPart::get_mover_state() {
-        if(!get_enabled()) {
+        if (!get_enabled()) {
             return state;
         }
         if (train_controller_node != nullptr) {
@@ -149,9 +166,9 @@ namespace godot {
 
     void TrainPart::on_command_received(const String &command, const Variant &p1, const Variant &p2) {
         _on_command_received(command, p1, p2);
-        update_mover();
+        // update_mover(); // unnecessary, I think
     }
-    
-    void TrainPart::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {
-    }
+
+    void TrainPart::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {}
+
 } // namespace godot
