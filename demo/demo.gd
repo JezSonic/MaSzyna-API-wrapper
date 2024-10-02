@@ -12,9 +12,6 @@ var _t:float = 0.0
 func _ready() -> void:
     $%TrainName.text = "%s (type: %s)" % [train.name, train.type_name]
 
-    TrainSystem.broadcast_command("brake_level_set", 10)
-    print(TrainSystem.get_supported_commands())
-    TrainSystem.broadcast_command("lock_power")
 
 func draw_dictionary(dict: Dictionary, target: DebugPanel):
     var lines = []

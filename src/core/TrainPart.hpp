@@ -26,6 +26,7 @@ namespace godot {
             Dictionary state;
 
         protected:
+            void _notification(int p_what);
             bool enabled = true;
             bool enabled_changed = false;
             bool _dirty = false;
@@ -54,9 +55,6 @@ namespace godot {
             virtual void _do_process_mover(TMoverParameters *mover, double delta) = 0;
 
         public:
-            void _ready() override;
-            void _enter_tree() override;
-            void _exit_tree() override;
             void _process(double delta) override;
             virtual void _process_mover(double delta);
             void on_command_received(const String &command, const Variant &p1, const Variant &p2);

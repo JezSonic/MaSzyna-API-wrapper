@@ -26,15 +26,40 @@ namespace godot {
 
     TrainPart::TrainPart() = default;
 
-    void TrainPart::_ready() {
-        /* Dear Lord, prevent it from running in the editor. Thanks~ UwU */
+    void TrainPart::_notification(int p_what) {
         if (Engine::get_singleton()->is_editor_hint()) {
             return;
         }
-        if (train_controller_node != nullptr) {
-            train_controller_node->connect(TrainController::COMMAND_RECEIVED, Callable(this, "on_command_received"));
+        switch (p_what) {
+            case NOTIFICATION_ENTER_TREE: {
+                Node *p = get_parent();
+                while (p != nullptr) {
+                    train_controller_node = Object::cast_to<TrainController>(p);
+                    if (train_controller_node != nullptr) {
+                        break;
+                    }
+                    p = p->get_parent();
+                }
+                if (train_controller_node != nullptr) {
+                    train_controller_node->connect(
+                            TrainController::MOVER_CONFIG_CHANGED_SIGNAL, Callable(this, "update_mover"));
+                }
+            } break;
+            case NOTIFICATION_EXIT_TREE: {
+                if (train_controller_node != nullptr) {
+                    train_controller_node->disconnect(
+                            TrainController::MOVER_CONFIG_CHANGED_SIGNAL, Callable(this, "update_mover"));
+                }
+                train_controller_node = nullptr;
+            } break;
+            case NOTIFICATION_READY: {
+                if (train_controller_node != nullptr) {
+                    train_controller_node->connect(
+                            TrainController::COMMAND_RECEIVED, Callable(this, "on_command_received"));
+                }
+                _dirty = true;
+            } break;
         }
-        _dirty = true;
     }
 
     void TrainPart::bind_command(const String &command, const Callable &callback) {
@@ -51,35 +76,6 @@ namespace godot {
 
     void TrainPart::emit_config_changed_signal() {
         emit_signal("config_changed");
-    }
-
-    void TrainPart::_enter_tree() {
-        if (Engine::get_singleton()->is_editor_hint()) {
-            return;
-        }
-        Node *p = get_parent();
-        while (p != nullptr) {
-            train_controller_node = Object::cast_to<TrainController>(p);
-            if (train_controller_node != nullptr) {
-                break;
-            }
-            p = p->get_parent();
-        }
-        if (train_controller_node != nullptr) {
-            train_controller_node->connect(
-                    TrainController::MOVER_CONFIG_CHANGED_SIGNAL, Callable(this, "update_mover"));
-        }
-    }
-
-    void TrainPart::_exit_tree() {
-        if (Engine::get_singleton()->is_editor_hint()) {
-            return;
-        }
-        if (train_controller_node != nullptr) {
-            train_controller_node->disconnect(
-                    TrainController::MOVER_CONFIG_CHANGED_SIGNAL, Callable(this, "update_mover"));
-        }
-        train_controller_node = nullptr;
     }
 
     void TrainPart::_process(double delta) {
