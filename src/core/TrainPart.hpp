@@ -63,6 +63,8 @@ namespace godot {
 
             void bind_command(const String &command, const Callable &callback);
             void unbind_command(const String &command, const Callable &callback);
+            void send_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
             void log(const TrainSystem::TrainLogLevel level, const String &line);
             void log_debug(const String &line);
             void log_info(const String &line);

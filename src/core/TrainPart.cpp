@@ -13,6 +13,12 @@ namespace godot {
         ClassDB::bind_method(D_METHOD("unbind_command", "command", "callable"), &TrainPart::unbind_command);
         ClassDB::bind_method(D_METHOD("update_mover"), &TrainPart::update_mover);
         ClassDB::bind_method(D_METHOD("get_mover_state"), &TrainPart::get_mover_state);
+        ClassDB::bind_method(
+                D_METHOD("send_command", "command", "p1", "p2"), &TrainPart::send_command, DEFVAL(Variant()),
+                DEFVAL(Variant()));
+        ClassDB::bind_method(
+                D_METHOD("broadcast_command", "command", "p1", "p2"), &TrainPart::broadcast_command, DEFVAL(Variant()),
+                DEFVAL(Variant()));
         ClassDB::bind_method(D_METHOD("log", "loglevel", "line"), &TrainPart::log);
         ClassDB::bind_method(D_METHOD("log_debug", "line"), &TrainPart::log_debug);
         ClassDB::bind_method(D_METHOD("log_info", "line"), &TrainPart::log_info);
@@ -194,5 +200,19 @@ namespace godot {
     }
 
     void TrainPart::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {}
+
+    void TrainPart::send_command(const String &command, const Variant &p1, const Variant &p2) {
+        if (train_controller_node != nullptr) {
+            TrainSystem *train_system =
+                    dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+            train_system->send_command_to_train(train_controller_node->get_name().to_lower(), command, p1, p2);
+        }
+    }
+
+    void TrainPart::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
+        TrainSystem *train_system =
+                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+        train_system->broadcast_command(command, p1, p2);
+    }
 
 } // namespace godot
