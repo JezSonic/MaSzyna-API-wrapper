@@ -138,7 +138,7 @@ text = "General"
 [node name="Battery" parent="UI/MoverSwitches/General" instance=ExtResource("4_xvhus")]
 layout_mode = 2
 label = "Battery"
-controller = NodePath("../../../../SM42_V1")
+controller = NodePath("../../../../SM42")
 state_property = "battery_enabled"
 command = "battery"
 
@@ -169,7 +169,7 @@ text = "Security"
 layout_mode = 2
 label = "CA/SHP"
 type = 1
-controller = NodePath("../../../../SM42_V1")
+controller = NodePath("../../../../SM42")
 command = "security_acknowledge"
 
 [node name="Diesel" type="HFlowContainer" parent="UI/MoverSwitches"]
@@ -183,7 +183,7 @@ text = "Diesel"
 layout_mode = 2
 label = "Oil Pump"
 type = 1
-controller = NodePath("../../../../SM42_V1")
+controller = NodePath("../../../../SM42")
 state_property = "oil_pump_active"
 command = "oil_pump"
 
@@ -191,7 +191,7 @@ command = "oil_pump"
 layout_mode = 2
 label = "Fuel Pump"
 type = 1
-controller = NodePath("../../../../SM42_V1")
+controller = NodePath("../../../../SM42")
 state_property = "fuel_pump_active"
 command = "fuel_pump"
 
@@ -199,7 +199,7 @@ command = "fuel_pump"
 layout_mode = 2
 label = "Main"
 type = 0
-controller = NodePath("../../../../SM42_V1")
+controller = NodePath("../../../../SM42")
 state_property = "main_switch"
 command = "main_switch"
 
@@ -237,12 +237,12 @@ layout_mode = 2
 layout_mode = 2
 label = "Releaser"
 type = 1
-controller = NodePath("../../../../SM42_V1")
+controller = NodePath("../../../../SM42")
 command = "brake_releaser"
 
-[node name="SM42_V1" parent="." instance=ExtResource("2_t8uqe")]
+[node name="SM42" parent="." instance=ExtResource("2_t8uqe")]
 
-[node name="TestowySilnikElektryczny" parent="SM42_V1" index="1"]
+[node name="TestowySilnikElektryczny" parent="SM42" index="1"]
 enabled = false
 
 [connection signal="button_up" from="UI/MoverSwitches/General/MainIncrease" to="." method="_on_main_increase_button_up"]
@@ -251,4 +251,4 @@ enabled = false
 [connection signal="button_up" from="UI/MoverSwitches/General/Reverse" to="." method="_on_reverse_button_up"]
 [connection signal="value_changed" from="UI/MoverSwitches/Brakes/BrakeLevel" to="." method="_on_brake_level_value_changed"]
 
-[editable path="SM42_V1"]
+[editable path="SM42"]

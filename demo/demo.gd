@@ -2,10 +2,10 @@ extends Control
 
 var _t:float = 0.0
 
-@onready var train = $SM42_V1
-@onready var brake = $SM42_V1/Brake
-@onready var engine = $SM42_V1/StonkaDieselEngine
-@onready var security = $SM42_V1/TrainSecuritySystem
+@onready var train = $SM42
+@onready var brake = $SM42/Brake
+@onready var engine = $SM42/StonkaDieselEngine
+@onready var security = $SM42/TrainSecuritySystem
 
 
 # Called when the node enters the scene tree for the first time.
