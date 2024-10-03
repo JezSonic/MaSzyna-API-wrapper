@@ -1,10 +1,16 @@
 extends GenericTrainPart
-class_name CustomTrainPart
 
 var _total_time = 0.0
+
 var state = {
     "custom_train_part_calls": 0,
 }
+
+func _enter_tree():
+    bind_command("custom_command", self._handle_custom_command)
+
+func _handle_custom_command(p1, p2):
+    log_warning("CUSTOM COMMAND HERE")
 
 func _process_train_part(delta):
     _total_time += delta
