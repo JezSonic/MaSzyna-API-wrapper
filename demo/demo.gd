@@ -11,6 +11,11 @@ var _t:float = 0.0
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     $%TrainName.text = "%s (type: %s)" % [train.name, train.type_name]
+    Console.add_command("broadcast", self.console_broadcast, ["command", "p1", "p2"], 1)
+
+func console_broadcast(command, p1=null, p2=null):
+    #Console.print_line("Broadcasting command: %s(%s, %s)" % [command, p1, p2], true)
+    TrainSystem.broadcast_command(command, p1, p2)
 
 
 func draw_dictionary(dict: Dictionary, target: DebugPanel):
