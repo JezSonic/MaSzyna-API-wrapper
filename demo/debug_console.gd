@@ -14,7 +14,7 @@ func _ready() -> void:
     console.add_command("send", self.console_send, ["train", "command", "p1", "p2"], 2)
     console.add_command("trains", self.console_list_trains)
     console.add_command("traincommands", self.console_list_train_commands)
-    console.add_command("state", self.console_state, ["train", "parameter"], 1)
+    console.add_command("get", self.console_get_train_state, ["train", "parameter"], 1)
 
     TrainSystem.train_log_updated.connect(self.console_print_train_log)
 
@@ -39,7 +39,7 @@ func console_print_train_log(train_id, loglevel, line):
     else:
         console.print_line("%s: %s" % [train_id, line])
 
-func console_state(train, key=null):
+func console_get_train_state(train, key=null):
     var out = TrainSystem.get_train_state(train)
     if key:
         out = out.get(key)
