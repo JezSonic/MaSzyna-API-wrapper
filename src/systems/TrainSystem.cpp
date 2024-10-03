@@ -17,9 +17,35 @@ namespace godot {
         ClassDB::bind_method(D_METHOD("bind_command", "train_id", "command", "callable"), &TrainSystem::bind_command);
         ClassDB::bind_method(
                 D_METHOD("unbind_command", "train_id", "command", "callable"), &TrainSystem::unbind_command);
+        ClassDB::bind_method(D_METHOD("get_train_state", "train_id"), &TrainSystem::get_train_state);
+        ClassDB::bind_method(D_METHOD("log", "train_id", "loglevel", "line"), &TrainSystem::log);
+        ADD_SIGNAL(MethodInfo(
+                "train_log_updated", PropertyInfo(Variant::STRING, "train"), PropertyInfo(Variant::INT, "loglevel"),
+                PropertyInfo(Variant::STRING, "line")));
+        BIND_ENUM_CONSTANT(TRAINLOGLEVEL_DEBUG);
+        BIND_ENUM_CONSTANT(TRAINLOGLEVEL_INFO);
+        BIND_ENUM_CONSTANT(TRAINLOGLEVEL_WARNING);
+        BIND_ENUM_CONSTANT(TRAINLOGLEVEL_ERROR);
     }
 
     TrainSystem::TrainSystem() {}
+
+    Dictionary TrainSystem::get_train_state(const String train_id) {
+        auto it = trains.find(train_id);
+
+        if (it == trains.end()) {
+            log(train_id, TrainLogLevel::TRAINLOGLEVEL_ERROR, "Train is not registered in TrainSystem");
+            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
+            Dictionary empty;
+            return empty;
+        }
+        TrainController *train = it->second;
+        return train->get_state();
+    }
+
+    void TrainSystem::log(const String train_id, TrainLogLevel level, const String &line) {
+        emit_signal("train_log_updated", train_id, level, line);
+    }
 
     void TrainSystem::register_train(const String train_id, TrainController *train) {
         trains[train_id] = train;
@@ -29,6 +55,7 @@ namespace godot {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
+            log(train_id, TrainLogLevel::TRAINLOGLEVEL_ERROR, "Train is not registered in TrainSystem");
             UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
             return;
         }
@@ -57,6 +84,7 @@ namespace godot {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
+            log(train_id, TrainLogLevel::TRAINLOGLEVEL_ERROR, "Train is not registered in TrainSystem");
             UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
             return;
         }
@@ -87,6 +115,7 @@ namespace godot {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
+            log(train_id, TrainLogLevel::TRAINLOGLEVEL_ERROR, "Train is not registered in TrainSystem");
             UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
             return;
         }
@@ -136,6 +165,7 @@ namespace godot {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
+            log(train_id, TrainLogLevel::TRAINLOGLEVEL_ERROR, "Train is not registered in TrainSystem");
             UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
             return;
         }
@@ -171,6 +201,7 @@ namespace godot {
                 UtilityFunctions::push_warning("Command ", command, " was not called due to not matched trains");
             }
         } else {
+            log(train_id, TrainLogLevel::TRAINLOGLEVEL_WARNING, "Possibly unknown command");
             WARN_PRINT("Possibly unknown command: " + command);
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/node.hpp>
+#include "../systems/TrainSystem.hpp"
 #include "TrainController.hpp"
 
 #define BIND_TRAIN_COMMAND(command_name, exposed_method_name, callback)                                                \
@@ -62,6 +63,11 @@ namespace godot {
 
             void bind_command(const String &command, const Callable &callback);
             void unbind_command(const String &command, const Callable &callback);
+            void log(const TrainSystem::TrainLogLevel level, const String &line);
+            void log_debug(const String &line);
+            void log_info(const String &line);
+            void log_warning(const String &line);
+            void log_error(const String &line);
 
             void set_enabled(bool p_value);
             bool get_enabled();

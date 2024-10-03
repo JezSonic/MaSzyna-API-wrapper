@@ -13,6 +13,11 @@ namespace godot {
         ClassDB::bind_method(D_METHOD("unbind_command", "command", "callable"), &TrainPart::unbind_command);
         ClassDB::bind_method(D_METHOD("update_mover"), &TrainPart::update_mover);
         ClassDB::bind_method(D_METHOD("get_mover_state"), &TrainPart::get_mover_state);
+        ClassDB::bind_method(D_METHOD("log", "loglevel", "line"), &TrainPart::log);
+        ClassDB::bind_method(D_METHOD("log_debug", "line"), &TrainPart::log_debug);
+        ClassDB::bind_method(D_METHOD("log_info", "line"), &TrainPart::log_info);
+        ClassDB::bind_method(D_METHOD("log_warning", "line"), &TrainPart::log_warning);
+        ClassDB::bind_method(D_METHOD("log_error", "line"), &TrainPart::log_error);
 
         ClassDB::bind_method(D_METHOD("set_enabled"), &TrainPart::set_enabled);
         ClassDB::bind_method(D_METHOD("get_enabled"), &TrainPart::get_enabled);
@@ -60,6 +65,29 @@ namespace godot {
                 _dirty = true;
             } break;
         }
+    }
+
+    void TrainPart::log(const TrainSystem::TrainLogLevel level, const String &line) {
+        if (train_controller_node != nullptr) {
+            TrainSystem *train_system =
+                    dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+            train_system->log(train_controller_node->get_name().to_lower(), level, line);
+        }
+    }
+    void TrainPart::log_debug(const String &line) {
+        log(TrainSystem::TrainLogLevel::TRAINLOGLEVEL_DEBUG, line);
+    }
+
+    void TrainPart::log_info(const String &line) {
+        log(TrainSystem::TrainLogLevel::TRAINLOGLEVEL_INFO, line);
+    }
+
+    void TrainPart::log_warning(const String &line) {
+        log(TrainSystem::TrainLogLevel::TRAINLOGLEVEL_WARNING, line);
+    }
+
+    void TrainPart::log_error(const String &line) {
+        log(TrainSystem::TrainLogLevel::TRAINLOGLEVEL_ERROR, line);
     }
 
     void TrainPart::bind_command(const String &command, const Callable &callback) {
