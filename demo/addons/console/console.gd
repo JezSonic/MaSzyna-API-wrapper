@@ -59,14 +59,12 @@ func _ready() -> void:
     line_edit.text_changed.connect(on_line_edit_text_changed)
     control.visible = false
     process_mode = PROCESS_MODE_ALWAYS
-    add_command("quit", quit, 0)
-    add_command("exit", quit, 0)
-    add_command("clear", clear, 0)
-    add_command("delete_history", delete_history, 0)
-    add_command("help", help, 0)
-    add_command("commands_list", commands_list, 0)
-    add_command("commands", commands, 0)
-    add_command("calc", calculate, 1)
+
+    add_command("exit", quit, 0, 0, "Exit game")
+    add_command("clear", clear, 0, 0, "Clear console")
+    add_command("delete_history", delete_history, 0, 0, "Delete console history")
+    add_command("help", commands_list, 0, 0, "Print this help")
+
 
 
 func _input(event : InputEvent) -> void:
@@ -272,14 +270,6 @@ func on_text_entered(new_text : String) -> void:
         if console_commands.has(text_command):
             var arguments := text_split.slice(1)
 
-            # calc is a especial command that needs special treatment
-            if text_command.match("calc"):
-                var expression := ""
-                for word in arguments:
-                    expression += word
-                console_commands[text_command].function.callv([expression])
-                return
-
             if arguments.size() < console_commands[text_command].required:
                 print_line("[color=light_coral]	ERROR:[/color] Too few arguments! Required < %d >" % console_commands[text_command].required)
                 return
@@ -333,45 +323,6 @@ func delete_history() -> void:
     console_history.clear()
     console_history_index = 0
     DirAccess.remove_absolute("user://console_history.txt")
-
-
-func help() -> void:
-    rich_label.append_text("	Built in commands:
-        [color=light_green]calc[/color]: Calculates a given expresion
-        [color=light_green]clear[/color]: Clears the registry view
-        [color=light_green]commands[/color]: Shows a reduced list of all the currently registered commands
-        [color=light_green]commands_list[/color]: Shows a detailed list of all the currently registered commands
-        [color=light_green]delete_hystory[/color]: Deletes the commands history
-        [color=light_green]quit[/color]: Quits the game
-    Controls:
-        [color=light_blue]Up[/color] and [color=light_blue]Down[/color] arrow keys to navigate commands history
-        [color=light_blue]PageUp[/color] and [color=light_blue]PageDown[/color] to scroll registry
-        [[color=light_blue]Ctr[/color] + [color=light_blue]~[/color]] to change console size between half screen and full screen
-        [color=light_blue]~[/color] or [color=light_blue]Esc[/color] key to close the console
-        [color=light_blue]Tab[/color] key to autocomplete, [color=light_blue]Tab[/color] again to cycle between matching suggestions\n\n")
-
-
-func calculate(command : String) -> void:
-    var expression := Expression.new()
-    var error = expression.parse(command)
-    if error:
-        print_line("[color=light_coral]	ERROR: [/color] %s" % expression.get_error_text())
-        return
-    var result = expression.execute()
-    if not expression.has_execute_failed():
-        print_line(str(result))
-    else:
-        print_line("[color=light_coral]	ERROR: [/color] %s" % expression.get_error_text())
-
-
-func commands() -> void:
-    var commands := []
-    for command in console_commands:
-        commands.append(str(command))
-    commands.sort()
-    rich_label.append_text("	")
-    rich_label.append_text(str(commands) + "\n\n")
-
 
 func commands_list() -> void:
     var commands := []

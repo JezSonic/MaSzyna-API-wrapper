@@ -10,11 +10,11 @@ extends Node
 
 func _ready() -> void:
     console.control.visible = visible
-    console.add_command("broadcast", self.console_broadcast, ["command", "p1", "p2"], 1)
-    console.add_command("send", self.console_send, ["train", "command", "p1", "p2"], 2)
-    console.add_command("trains", self.console_list_trains)
-    console.add_command("traincommands", self.console_list_train_commands)
-    console.add_command("get", self.console_get_train_state, ["train", "parameter"], 1)
+    console.add_command("broadcast", self.console_broadcast, ["command", "p1", "p2"], 1, "Broadcast message to all trains")
+    console.add_command("send", self.console_send, ["train", "command", "p1", "p2"], 2, "Send message to a train")
+    console.add_command("trains", self.console_list_trains, 0, 0, "List trains")
+    console.add_command("traincommands", self.console_list_train_commands, 0, 0, "List available train commands")
+    console.add_command("get", self.console_get_train_state, ["train", "parameter"], 1, "Get train state / parameter")
 
     TrainSystem.train_log_updated.connect(self.console_print_train_log)
 
