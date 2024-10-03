@@ -16,20 +16,21 @@ namespace godot {
             GDCLASS(TrainSystem, RefCounted);
 
         private:
-            std::map<unsigned long, TrainController *> trains;
+            std::map<String, TrainController *> trains;
             Dictionary commands;
 
         public:
             TrainSystem();
             ~TrainSystem() override = default;
 
-            void register_train(TrainController *train);
-            void bind_command(TrainController *train, const String &command, const Callable &callback);
-            void unbind_command(TrainController *train, const String &command, const Callable &callback);
+            void register_train(String id, TrainController *train);
+            void bind_command(String train_id, const String &command, const Callable &callback);
+            void unbind_command(String train_id, const String &command, const Callable &callback);
             Array get_supported_commands();
-            void unregister_train(TrainController *train);
+            Array get_registered_trains();
+            void unregister_train(String train_id);
             void send_command_to_train(
-                    TrainController *train, const String &command, const Variant &p1 = Variant(),
+                    String train_id, const String &command, const Variant &p1 = Variant(),
                     const Variant &p2 = Variant());
             void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
 

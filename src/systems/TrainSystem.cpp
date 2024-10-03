@@ -3,34 +3,37 @@
 
 namespace godot {
     void TrainSystem::_bind_methods() {
-        ClassDB::bind_method(D_METHOD("register_train", "train"), &TrainSystem::register_train);
-        ClassDB::bind_method(D_METHOD("unregister_train", "train"), &TrainSystem::unregister_train);
+        ClassDB::bind_method(D_METHOD("register_train", "train_id", "train"), &TrainSystem::register_train);
+        ClassDB::bind_method(D_METHOD("unregister_train", "train_id"), &TrainSystem::unregister_train);
         ClassDB::bind_method(
                 D_METHOD("send_command_to_train", "train_id", "command", "p1", "p2"),
-                &TrainSystem::send_command_to_train);
+                &TrainSystem::send_command_to_train, DEFVAL(Variant()), DEFVAL(Variant()));
         ClassDB::bind_method(
                 D_METHOD("broadcast_command", "command", "p1", "p2"), &TrainSystem::broadcast_command,
                 DEFVAL(Variant()), DEFVAL(Variant()));
         ClassDB::bind_method(D_METHOD("is_command_supported", "command"), &TrainSystem::is_command_supported);
         ClassDB::bind_method(D_METHOD("get_supported_commands"), &TrainSystem::get_supported_commands);
-        ClassDB::bind_method(D_METHOD("bind_command", "train", "command", "callable"), &TrainSystem::bind_command);
-        ClassDB::bind_method(D_METHOD("unbind_command", "train", "command", "callable"), &TrainSystem::unbind_command);
+        ClassDB::bind_method(D_METHOD("get_registered_trains"), &TrainSystem::get_registered_trains);
+        ClassDB::bind_method(D_METHOD("bind_command", "train_id", "command", "callable"), &TrainSystem::bind_command);
+        ClassDB::bind_method(
+                D_METHOD("unbind_command", "train_id", "command", "callable"), &TrainSystem::unbind_command);
     }
 
     TrainSystem::TrainSystem() {}
 
-    void TrainSystem::register_train(TrainController *train) {
-        unsigned long train_id = train->get_instance_id(); // Get the unique unsigned long
+    void TrainSystem::register_train(const String train_id, TrainController *train) {
         trains[train_id] = train;
     }
 
-    void TrainSystem::bind_command(TrainController *train, const String &command, const Callable &callback) {
+    void TrainSystem::bind_command(const String train_id, const String &command, const Callable &callback) {
+        auto it = trains.find(train_id);
 
-        if (trains.find(train->get_instance_id()) == trains.end()) {
-            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train);
+        if (it == trains.end()) {
+            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
             return;
         }
 
+        TrainController *train = it->second;
         auto instance_id = train->get_instance_id();
 
         if (!commands.has(command)) {
@@ -50,11 +53,14 @@ namespace godot {
         _callbacks.push_back(callback);
     }
 
-    void TrainSystem::unbind_command(TrainController *train, const String &command, const Callable &callback) {
-        if (trains.find(train->get_instance_id()) == trains.end()) {
-            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train);
+    void TrainSystem::unbind_command(const String train_id, const String &command, const Callable &callback) {
+        auto it = trains.find(train_id);
+
+        if (it == trains.end()) {
+            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
             return;
         }
+        TrainController *train = it->second;
 
         if (commands.has(command)) {
             auto instance_id = train->get_instance_id();
@@ -77,7 +83,15 @@ namespace godot {
         }
     }
 
-    void TrainSystem::unregister_train(TrainController *train) {
+    void TrainSystem::unregister_train(const String train_id) {
+        auto it = trains.find(train_id);
+
+        if (it == trains.end()) {
+            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
+            return;
+        }
+        TrainController *train = it->second;
+
         Array command_keys = (Array)commands.keys();
         auto instance_id = train->get_instance_id();
 
@@ -98,7 +112,7 @@ namespace godot {
             commands.erase(commands_to_remove[i]);
         }
 
-        trains.erase(instance_id);
+        trains.erase(train_id);
     }
 
     bool TrainSystem::is_command_supported(const String &command) {
@@ -109,8 +123,23 @@ namespace godot {
         return commands.keys();
     }
 
+    Array TrainSystem::get_registered_trains() {
+        Array train_names;
+        for (const auto &pair: trains) {
+            train_names.append(pair.first);
+        }
+        return train_names;
+    }
+
     void TrainSystem::send_command_to_train(
-            TrainController *train, const String &command, const Variant &p1, const Variant &p2) {
+            const String train_id, const String &command, const Variant &p1, const Variant &p2) {
+        auto it = trains.find(train_id);
+
+        if (it == trains.end()) {
+            UtilityFunctions::push_error("Train is not registered in TrainSystem: ", train_id);
+            return;
+        }
+        TrainController *train = it->second;
         if (is_command_supported(command)) {
 
             Dictionary _trains = (Dictionary)commands[command];
@@ -151,7 +180,7 @@ namespace godot {
 
     void TrainSystem::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
         for (auto &[train_id, train]: trains) {
-            send_command_to_train(train, command, p1, p2);
+            send_command_to_train(train_id, command, p1, p2);
         }
     }
 } // namespace godot

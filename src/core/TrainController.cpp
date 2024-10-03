@@ -139,7 +139,7 @@ namespace godot {
         TrainSystem *train_system =
                 dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
         if (train_system != nullptr) {
-            train_system->register_train(this);
+            train_system->register_train(this->get_name().to_lower(), this);
         } else {
             UtilityFunctions::push_error("TrainSystem singleton is nullptr!");
         }
@@ -152,7 +152,7 @@ namespace godot {
         TrainSystem *train_system =
                 dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
         if (train_system != nullptr) {
-            train_system->unregister_train(this);
+            train_system->unregister_train(this->get_name().to_lower());
         } else {
             UtilityFunctions::push_error("TrainSystem singleton is nullptr!");
         }
@@ -389,7 +389,7 @@ namespace godot {
     void TrainController::receive_command(const StringName &command, const Variant &p1, const Variant &p2) {
         TrainSystem *train_system =
                 dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-        train_system->send_command_to_train(this, String(command), p1, p2);
+        train_system->send_command_to_train(this->get_name().to_lower(), String(command), p1, p2);
         /*
         _on_command_received(String(command), p1, p2);
         if (mover != nullptr) {

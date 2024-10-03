@@ -12,10 +12,22 @@ var _t:float = 0.0
 func _ready() -> void:
     $%TrainName.text = "%s (type: %s)" % [train.name, train.type_name]
     Console.add_command("broadcast", self.console_broadcast, ["command", "p1", "p2"], 1)
+    Console.add_command("send", self.console_send, ["train", "command", "p1", "p2"], 2)
+    Console.add_command("trains", self.console_list_trains)
+    Console.add_command("train_commands", self.console_list_train_commands)
 
 func console_broadcast(command, p1=null, p2=null):
     #Console.print_line("Broadcasting command: %s(%s, %s)" % [command, p1, p2], true)
     TrainSystem.broadcast_command(command, p1, p2)
+
+func console_send(train, command, p1=null, p2=null):
+    TrainSystem.send_command_to_train(train, command, p1, p2)
+
+func console_list_trains():
+    Console.print_line("%s" % "\n".join(TrainSystem.get_registered_trains()))
+
+func console_list_train_commands():
+    Console.print_line("%s" % "\n".join(TrainSystem.get_supported_commands()))
 
 
 func draw_dictionary(dict: Dictionary, target: DebugPanel):

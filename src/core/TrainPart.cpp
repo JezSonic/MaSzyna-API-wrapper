@@ -65,13 +65,13 @@ namespace godot {
     void TrainPart::bind_command(const String &command, const Callable &callback) {
         TrainSystem *train_system =
                 dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-        train_system->bind_command(train_controller_node, command, callback);
+        train_system->bind_command(train_controller_node->get_name().to_lower(), command, callback);
     }
 
     void TrainPart::unbind_command(const String &command, const Callable &callback) {
         TrainSystem *train_system =
                 dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-        train_system->unbind_command(train_controller_node, command, callback);
+        train_system->unbind_command(train_controller_node->get_name().to_lower(), command, callback);
     }
 
     void TrainPart::emit_config_changed_signal() {
