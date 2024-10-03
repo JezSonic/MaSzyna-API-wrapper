@@ -75,9 +75,7 @@ namespace godot {
 
     void TrainPart::log(const TrainSystem::TrainLogLevel level, const String &line) {
         if (train_controller_node != nullptr) {
-            TrainSystem *train_system =
-                    dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-            train_system->log(train_controller_node->get_name().to_lower(), level, line);
+            TrainSystem::get_instance()->log(train_controller_node->get_name().to_lower(), level, line);
         }
     }
     void TrainPart::log_debug(const String &line) {
@@ -97,15 +95,11 @@ namespace godot {
     }
 
     void TrainPart::bind_command(const String &command, const Callable &callback) {
-        TrainSystem *train_system =
-                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-        train_system->bind_command(train_controller_node->get_name().to_lower(), command, callback);
+        TrainSystem::get_instance()->bind_command(train_controller_node->get_name().to_lower(), command, callback);
     }
 
     void TrainPart::unbind_command(const String &command, const Callable &callback) {
-        TrainSystem *train_system =
-                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-        train_system->unbind_command(train_controller_node->get_name().to_lower(), command, callback);
+        TrainSystem::get_instance()->unbind_command(train_controller_node->get_name().to_lower(), command, callback);
     }
 
     void TrainPart::emit_config_changed_signal() {
@@ -203,16 +197,13 @@ namespace godot {
 
     void TrainPart::send_command(const String &command, const Variant &p1, const Variant &p2) {
         if (train_controller_node != nullptr) {
-            TrainSystem *train_system =
-                    dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-            train_system->send_command_to_train(train_controller_node->get_name().to_lower(), command, p1, p2);
+            TrainSystem::get_instance()->send_command_to_train(
+                    train_controller_node->get_name().to_lower(), command, p1, p2);
         }
     }
 
     void TrainPart::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
-        TrainSystem *train_system =
-                dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
-        train_system->broadcast_command(command, p1, p2);
+        TrainSystem::get_instance()->broadcast_command(command, p1, p2);
     }
 
 } // namespace godot

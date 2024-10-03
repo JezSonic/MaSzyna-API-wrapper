@@ -1,5 +1,6 @@
 #pragma once
 
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/array.hpp>
@@ -20,6 +21,10 @@ namespace godot {
             Dictionary commands;
 
         public:
+            inline static TrainSystem *get_instance() {
+                return dynamic_cast<TrainSystem *>(godot::Engine::get_singleton()->get_singleton("TrainSystem"));
+            }
+
             enum TrainLogLevel {
                 TRAINLOGLEVEL_DEBUG = 0,
                 TRAINLOGLEVEL_INFO,
