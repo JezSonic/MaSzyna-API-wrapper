@@ -1,4 +1,5 @@
 extends Node
+class_name Console
 
 var enabled := true
 var enable_on_release_build := false : set = set_enable_on_release_build

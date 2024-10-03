@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgm10m7u26drx"]
+
+[ext_resource type="Script" path="res://debug_console.gd" id="1_vako3"]
+[ext_resource type="Script" path="res://addons/console/console.gd" id="2_mc217"]
+
+[node name="DebugConsole" type="Node"]
+script = ExtResource("1_vako3")
+
+[node name="Console" type="Node" parent="."]
+script = ExtResource("2_mc217")

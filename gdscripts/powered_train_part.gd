@@ -38,4 +38,4 @@ func _process_regardless_of_power(delta):
 
 func _on_lock_power(p1, p2):
     locked = true if p1 else false
-    Console.print_line("%s power locked: %s" % [self.get_train_controller_node().name, locked])
+    #Console.print_line("%s power locked: %s" % [self.get_train_controller_node().name, locked])
