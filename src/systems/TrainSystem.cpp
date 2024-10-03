@@ -152,8 +152,6 @@ namespace godot {
     void TrainSystem::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
         for (auto &[train_id, train]: trains) {
             send_command_to_train(train, command, p1, p2);
-            train->_on_command_received(command, p1, p2);
-            train->emit_command_received_signal(command, p1, p2);
         }
     }
 } // namespace godot
