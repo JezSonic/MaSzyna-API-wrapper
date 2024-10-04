@@ -7,3 +7,5 @@ battery_voltage = 110.0
 process_priority = 1
 
 [node name="TrainSecuritySystem" type="TrainSecuritySystem" parent="."]
+
+[node name="TrainDieselElectricEngine" type="TrainDieselElectricEngine" parent="."]

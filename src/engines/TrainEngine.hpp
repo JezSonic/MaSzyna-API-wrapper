@@ -17,11 +17,13 @@ namespace godot {
             void _do_update_internal_mover(TMoverParameters *mover) override;
             void _do_fetch_state_from_mover(TMoverParameters *mover, Dictionary &state) override;
             void _do_process_mover(TMoverParameters *mover, double delta) override;
+            void _bind_commands() override;
+            void _unbind_commands() override;
 
         public:
             TypedArray<Dictionary> get_motor_param_table();
             void set_motor_param_table(const TypedArray<Dictionary> p_wwlist);
-            void _on_command_received(const String &command, const Variant &p1, const Variant &p2) override;
+            void _on_command_main_switch(const Variant &p1, const Variant &p2);
 
             TrainEngine();
             ~TrainEngine() override = default;
