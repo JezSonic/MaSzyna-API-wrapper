@@ -27,6 +27,8 @@ namespace godot {
 
         ClassDB::bind_method(D_METHOD("set_wwlist"), &TrainDieselEngine::set_wwlist);
         ClassDB::bind_method(D_METHOD("get_wwlist"), &TrainDieselEngine::get_wwlist);
+        ClassDB::bind_method(D_METHOD("_on_command_fuel_pump"), &TrainDieselEngine::_on_command_fuel_pump);
+        ClassDB::bind_method(D_METHOD("_on_command_oil_pump"), &TrainDieselEngine::_on_command_oil_pump);
         ADD_PROPERTY(
                 PropertyInfo(
                         Variant::ARRAY, "wwlist", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "TypedArray<Array>"),
@@ -144,16 +146,25 @@ namespace godot {
         wwlist.append_array(p_wwlist);
     }
 
-    void TrainDieselEngine::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {
-        TrainEngine::_on_command_received(command, p1, p2);
-        if (train_controller_node == nullptr) {
-            return;
-        }
-        if (command == "oil_pump") {
-            train_controller_node->get_mover()->OilPumpSwitch((bool)p1);
-        } else if (command == "fuel_pump") {
-            train_controller_node->get_mover()->FuelPumpSwitch((bool)p1);
-        }
+    void TrainDieselEngine::_on_command_oil_pump(const Variant &p1, const Variant &p2) {
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER(mover);
+        mover->OilPumpSwitch((bool)p1);
     }
 
+    void TrainDieselEngine::_on_command_fuel_pump(const Variant &p1, const Variant &p2) {
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER(mover);
+        mover->FuelPumpSwitch((bool)p1);
+    }
+
+    void TrainDieselEngine::_bind_commands() {
+        bind_command("oil_pump", Callable(this, "_on_command_oil_pump"));
+        bind_command("fuel_pump", Callable(this, "_on_command_fuel_pump"));
+    }
+
+    void TrainDieselEngine::_unbind_commands() {
+        unbind_command("oil_pump", Callable(this, "_on_command_oil_pump"));
+        unbind_command("fuel_pump", Callable(this, "_on_command_fuel_pump"));
+    }
 } // namespace godot

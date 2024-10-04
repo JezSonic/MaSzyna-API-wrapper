@@ -9,7 +9,7 @@
 	<tutorials>
 	</tutorials>
 	<methods>
-		<method name="bind_command">
+		<method name="bind_command" is_experimental="true">
 			<return type="void" />
 			<param index="0" name="command" type="String" />
 			<param index="1" name="callable" type="Callable" />
@@ -91,7 +91,7 @@
 				Sends command to the train, which part belongs to.
 			</description>
 		</method>
-		<method name="unbind_command">
+		<method name="unbind_command" is_experimental="true">
 			<return type="void" />
 			<param index="0" name="command" type="String" />
 			<param index="1" name="callable" type="Callable" />
