@@ -1,20 +1,13 @@
 #pragma once
+#include <functional>
 #include <godot_cpp/classes/node.hpp>
 #include "../systems/TrainSystem.hpp"
 #include "TrainController.hpp"
 
-#define BIND_TRAIN_COMMAND(command_name, exposed_method_name, callback)                                                \
-    ClassDB::bind_method(D_METHOD(exposed_method_name), callback);
-
-#define TRAIN_PART_REQUIRES_MOVER(variable)                                                                            \
-    if (train_controller_node == nullptr) {                                                                            \
-        return;                                                                                                        \
-    }                                                                                                                  \
-    TMoverParameters *variable = train_controller_node->get_mover();                                                   \
-    if (variable == nullptr) {                                                                                         \
+#define ASSERT_MOVER(mover_ptr)                                                                                        \
+    if ((mover_ptr) == nullptr) {                                                                                      \
         return;                                                                                                        \
     }
-
 
 namespace godot {
     class TrainPart : public Node {
@@ -53,6 +46,9 @@ namespace godot {
             virtual void _do_fetch_state_from_mover(TMoverParameters *mover, Dictionary &state) = 0;
 
             virtual void _do_process_mover(TMoverParameters *mover, double delta) = 0;
+
+            inline void with_mover(std::function<void(TMoverParameters *)> callback);
+            TMoverParameters *get_mover();
 
         public:
             void _process(double delta) override;

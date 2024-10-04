@@ -7,6 +7,10 @@
 #include <unordered_map>
 #include "../core/TrainPart.hpp"
 
+#define ASSERT_MOVER_BRAKE(mover_ptr)                                                                                  \
+    if ((mover_ptr) == nullptr || mover_ptr->Hamulec == nullptr) {                                                     \
+        return;                                                                                                        \
+    }
 
 namespace godot {
     class TrainController;

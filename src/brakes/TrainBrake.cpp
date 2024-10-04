@@ -238,34 +238,26 @@ namespace godot {
     }
 
     void TrainBrake::_on_command_brake_releaser(const Variant &p1, const Variant &p2) {
-        TRAIN_PART_REQUIRES_MOVER(mover);
-        if (mover->Hamulec == nullptr) {
-            return;
-        }
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER_BRAKE(mover);
         mover->BrakeReleaser((bool)p1 ? 1 : 0);
     }
 
     void TrainBrake::_on_command_brake_level_set(const Variant &p1, const Variant &p2) {
-        TRAIN_PART_REQUIRES_MOVER(mover);
-        if (mover->Hamulec == nullptr) {
-            return;
-        }
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER_BRAKE(mover);
         mover->BrakeLevelSet((float)p1);
     }
 
     void TrainBrake::_on_command_brake_level_increase(const Variant &p1, const Variant &p2) {
-        TRAIN_PART_REQUIRES_MOVER(mover);
-        if (mover->Hamulec == nullptr) {
-            return;
-        }
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER_BRAKE(mover);
         mover->IncBrakeLevel();
     }
 
     void TrainBrake::_on_command_brake_level_decrease(const Variant &p1, Variant const &p2) {
-        TRAIN_PART_REQUIRES_MOVER(mover);
-        if (mover->Hamulec == nullptr) {
-            return;
-        }
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER_BRAKE(mover);
         mover->DecBrakeLevel();
     }
 

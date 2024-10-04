@@ -37,6 +37,14 @@ namespace godot {
 
     TrainPart::TrainPart() = default;
 
+    TMoverParameters *TrainPart::get_mover() {
+        if (train_controller_node != nullptr) {
+            return train_controller_node->get_mover();
+        } else {
+            return nullptr;
+        }
+    }
+
     void TrainPart::_notification(int p_what) {
         if (Engine::get_singleton()->is_editor_hint()) {
             return;
