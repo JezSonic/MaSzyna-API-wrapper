@@ -6,8 +6,8 @@ namespace godot {
         ClassDB::bind_method(D_METHOD("register_train", "train_id", "train"), &TrainSystem::register_train);
         ClassDB::bind_method(D_METHOD("unregister_train", "train_id"), &TrainSystem::unregister_train);
         ClassDB::bind_method(
-                D_METHOD("send_command_to_train", "train_id", "command", "p1", "p2"),
-                &TrainSystem::send_command_to_train, DEFVAL(Variant()), DEFVAL(Variant()));
+                D_METHOD("send_command", "train_id", "command", "p1", "p2"),
+                &TrainSystem::send_command, DEFVAL(Variant()), DEFVAL(Variant()));
         ClassDB::bind_method(
                 D_METHOD("broadcast_command", "command", "p1", "p2"), &TrainSystem::broadcast_command,
                 DEFVAL(Variant()), DEFVAL(Variant()));
@@ -160,7 +160,7 @@ namespace godot {
         return train_names;
     }
 
-    void TrainSystem::send_command_to_train(
+    void TrainSystem::send_command(
             const String &train_id, const String &command, const Variant &p1, const Variant &p2) {
         auto it = trains.find(train_id);
 
@@ -211,7 +211,7 @@ namespace godot {
 
     void TrainSystem::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
         for (auto &[train_id, train]: trains) {
-            send_command_to_train(train_id, command, p1, p2);
+            send_command(train_id, command, p1, p2);
         }
     }
 } // namespace godot

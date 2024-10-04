@@ -373,7 +373,7 @@ namespace godot {
     }
 
     void TrainController::receive_command(const StringName &command, const Variant &p1, const Variant &p2) {
-        TrainSystem::get_instance()->send_command_to_train(this->get_name().to_lower(), String(command), p1, p2);
+        TrainSystem::get_instance()->send_command(this->get_name().to_lower(), String(command), p1, p2);
         /*
         _on_command_received(String(command), p1, p2);
         if (mover != nullptr) {

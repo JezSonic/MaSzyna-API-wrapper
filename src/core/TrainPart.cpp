@@ -209,7 +209,7 @@ namespace godot {
 
     void TrainPart::send_command(const String &command, const Variant &p1, const Variant &p2) {
         if (train_controller_node != nullptr) {
-            TrainSystem::get_instance()->send_command_to_train(
+            TrainSystem::get_instance()->send_command(
                     train_controller_node->get_name().to_lower(), command, p1, p2);
         }
     }

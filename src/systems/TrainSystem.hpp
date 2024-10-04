@@ -40,7 +40,7 @@ namespace godot {
             Array get_supported_commands();
             Array get_registered_trains();
             void unregister_train(const String &train_id);
-            void send_command_to_train(
+            void send_command(
                     const String &train_id, const String &command, const Variant &p1 = Variant(),
                     const Variant &p2 = Variant());
             void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());

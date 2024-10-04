@@ -23,7 +23,7 @@ func console_broadcast(command, p1=null, p2=null):
     TrainSystem.broadcast_command(command, p1, p2)
 
 func console_send(train, command, p1=null, p2=null):
-    TrainSystem.send_command_to_train(train, command, p1, p2)
+    TrainSystem.send_command(train, command, p1, p2)
 
 func console_list_trains():
     console.print_line("%s" % "\n".join(TrainSystem.get_registered_trains()))

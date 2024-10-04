@@ -9,6 +9,22 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="bind_command">
+			<return type="void" />
+			<param index="0" name="command" type="String" />
+			<param index="1" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="broadcast_command">
+			<return type="void" />
+			<param index="0" name="command" type="String" />
+			<param index="1" name="p1" type="Variant" default="null" />
+			<param index="2" name="p2" type="Variant" default="null" />
+			<description>
+				Broadcast command to all trains (including the train, which part belongs to)
+			</description>
+		</method>
 		<method name="emit_config_changed_signal">
 			<return type="void" />
 			<description>
@@ -21,6 +37,42 @@
 				Returns dictionary ov properties with values from iternal mover
 			</description>
 		</method>
+		<method name="log">
+			<return type="void" />
+			<param index="0" name="loglevel" type="int" enum="TrainSystem.TrainLogLevel" />
+			<param index="1" name="line" type="String" />
+			<description>
+				Logs a message
+			</description>
+		</method>
+		<method name="log_debug">
+			<return type="void" />
+			<param index="0" name="line" type="String" />
+			<description>
+				Logs a debug message. See [TrainLogLevel].
+			</description>
+		</method>
+		<method name="log_error">
+			<return type="void" />
+			<param index="0" name="line" type="String" />
+			<description>
+				Logs an error message. See [TrainLogLevel].
+			</description>
+		</method>
+		<method name="log_info">
+			<return type="void" />
+			<param index="0" name="line" type="String" />
+			<description>
+				Logs an info message. See [TrainLogLevel].
+			</description>
+		</method>
+		<method name="log_warning">
+			<return type="void" />
+			<param index="0" name="line" type="String" />
+				Logs a warning message. See [TrainLogLevel].
+			<description>
+			</description>
+		</method>
 		<method name="on_command_received">
 			<return type="void" />
 			<param index="0" name="_unnamed_arg0" type="String" />
@@ -28,6 +80,22 @@
 			<param index="2" name="_unnamed_arg2" type="Variant" />
 			<description>
 				Handles a command received by [TrainController]
+			</description>
+		</method>
+		<method name="send_command">
+			<return type="void" />
+			<param index="0" name="command" type="String" />
+			<param index="1" name="p1" type="Variant" default="null" />
+			<param index="2" name="p2" type="Variant" default="null" />
+			<description>
+				Sends command to the train, which part belongs to.
+			</description>
+		</method>
+		<method name="unbind_command">
+			<return type="void" />
+			<param index="0" name="command" type="String" />
+			<param index="1" name="callable" type="Callable" />
+			<description>
 			</description>
 		</method>
 		<method name="update_mover">
