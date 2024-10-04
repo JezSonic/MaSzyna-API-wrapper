@@ -30,7 +30,7 @@ namespace godot {
 
     TrainSystem::TrainSystem() {}
 
-    Dictionary TrainSystem::get_train_state(const String train_id) {
+    Dictionary TrainSystem::get_train_state(const String &train_id) {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
@@ -43,15 +43,15 @@ namespace godot {
         return train->get_state();
     }
 
-    void TrainSystem::log(const String train_id, TrainLogLevel level, const String &line) {
+    void TrainSystem::log(const String &train_id, TrainLogLevel level, const String &line) {
         emit_signal("train_log_updated", train_id, level, line);
     }
 
-    void TrainSystem::register_train(const String train_id, TrainController *train) {
+    void TrainSystem::register_train(const String &train_id, TrainController *train) {
         trains[train_id] = train;
     }
 
-    void TrainSystem::bind_command(const String train_id, const String &command, const Callable &callback) {
+    void TrainSystem::bind_command(const String &train_id, const String &command, const Callable &callback) {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
@@ -80,7 +80,7 @@ namespace godot {
         _callbacks.push_back(callback);
     }
 
-    void TrainSystem::unbind_command(const String train_id, const String &command, const Callable &callback) {
+    void TrainSystem::unbind_command(const String &train_id, const String &command, const Callable &callback) {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
@@ -111,7 +111,7 @@ namespace godot {
         }
     }
 
-    void TrainSystem::unregister_train(const String train_id) {
+    void TrainSystem::unregister_train(const String &train_id) {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
@@ -161,7 +161,7 @@ namespace godot {
     }
 
     void TrainSystem::send_command_to_train(
-            const String train_id, const String &command, const Variant &p1, const Variant &p2) {
+            const String &train_id, const String &command, const Variant &p1, const Variant &p2) {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {

@@ -34,20 +34,20 @@ namespace godot {
             TrainSystem();
             ~TrainSystem() override = default;
 
-            void register_train(String id, TrainController *train);
-            void bind_command(String train_id, const String &command, const Callable &callback);
-            void unbind_command(String train_id, const String &command, const Callable &callback);
+            void register_train(const String &train_id, TrainController *train);
+            void bind_command(const String &train_id, const String &command, const Callable &callback);
+            void unbind_command(const String &train_id, const String &command, const Callable &callback);
             Array get_supported_commands();
             Array get_registered_trains();
-            void unregister_train(String train_id);
+            void unregister_train(const String &train_id);
             void send_command_to_train(
-                    String train_id, const String &command, const Variant &p1 = Variant(),
+                    const String &train_id, const String &command, const Variant &p1 = Variant(),
                     const Variant &p2 = Variant());
             void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
 
             bool is_command_supported(const String &command);
-            void log(const String train_id, const TrainLogLevel level, const String &line);
-            Dictionary get_train_state(const String train_id);
+            void log(const String &train_id, const TrainLogLevel level, const String &line);
+            Dictionary get_train_state(const String &train_id);
 
         protected:
             static void _bind_methods();
