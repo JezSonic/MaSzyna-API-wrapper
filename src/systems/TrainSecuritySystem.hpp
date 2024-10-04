@@ -15,6 +15,8 @@ namespace godot {
             void _do_update_internal_mover(TMoverParameters *mover) override;
             void _do_fetch_state_from_mover(TMoverParameters *mover, Dictionary &state) override;
             void _do_process_mover(TMoverParameters *mover, double delta) override;
+            void _bind_commands() override;
+            void _unbind_commands() override;
 
         public:
             enum EmergencyBrakeWarningSignal {
@@ -43,7 +45,8 @@ namespace godot {
             double ca_max_hold_time = 0.0;              // MaxHoldTime -> SecuritySystem->MaxHoldTime
 
         public:
-            void _on_command_received(const String &command, const Variant &p1, const Variant &p2) override;
+            void _on_command_security_acknowledge(const Variant &p1, const Variant &p2);
+            //
             // Getters
             bool get_aware_system_active() const;
             bool get_aware_system_cabsignal() const;

@@ -75,6 +75,9 @@ namespace godot {
         ClassDB::bind_method(D_METHOD("get_ca_max_hold_time"), &TrainSecuritySystem::get_ca_max_hold_time);
         ClassDB::bind_method(D_METHOD("set_ca_max_hold_time"), &TrainSecuritySystem::set_ca_max_hold_time);
         ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ca_max_hold_time"), "set_ca_max_hold_time", "get_ca_max_hold_time");
+        ClassDB::bind_method(
+                D_METHOD("_on_command_security_acknowledge", "p1", "p2"),
+                &TrainSecuritySystem::_on_command_security_acknowledge);
 
         ADD_SIGNAL(MethodInfo("blinking_changed", PropertyInfo(Variant::BOOL, "state")));
         ADD_SIGNAL(MethodInfo("beeping_changed", PropertyInfo(Variant::BOOL, "state")));
@@ -218,22 +221,21 @@ namespace godot {
 
     void TrainSecuritySystem::_do_process_mover(TMoverParameters *mover, const double delta) {}
 
-    void TrainSecuritySystem::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {
-        TrainPart::_on_command_received(command, p1, p2);
+    void TrainSecuritySystem::_bind_commands() {
+        bind_command("security_acknowledge", Callable(this, "_on_command_security_acknowledge"));
+    }
 
-        if (train_controller_node == nullptr) {
-            return;
-        }
-        TMoverParameters *mover = train_controller_node->get_mover();
-        if (!mover) {
-            return;
-        }
-        if (command == "security_acknowledge") {
-            if ((bool)p1) {
-                mover->SecuritySystem.acknowledge_press();
-            } else {
-                mover->SecuritySystem.acknowledge_release();
-            }
+    void TrainSecuritySystem::_unbind_commands() {
+        unbind_command("security_acknowledge", Callable(this, "_on_command_security_acknowledge"));
+    }
+
+    void TrainSecuritySystem::_on_command_security_acknowledge(const Variant &p1, const Variant &p2) {
+        TMoverParameters *mover = get_mover();
+        ASSERT_MOVER(mover);
+        if ((bool)p1) {
+            mover->SecuritySystem.acknowledge_press();
+        } else {
+            mover->SecuritySystem.acknowledge_release();
         }
     }
 } // namespace godot
