@@ -106,11 +106,10 @@ namespace godot {
             void _do_update_internal_mover(TMoverParameters *mover) override;
             void _do_fetch_state_from_mover(TMoverParameters *mover, Dictionary &state) override;
             void _do_process_mover(TMoverParameters *mover, double delta) override;
+            void _bind_commands() override;
+            void _unbind_commands() override;
 
         public:
-            void _enter_tree() override;
-            void _exit_tree() override;
-
             static void _bind_methods();
 
             void set_valve(TrainBrakeValve p_valve);

@@ -47,7 +47,9 @@ namespace godot {
 
             virtual void _do_process_mover(TMoverParameters *mover, double delta) = 0;
 
-            inline void with_mover(std::function<void(TMoverParameters *)> callback);
+            virtual void _bind_commands();
+            virtual void _unbind_commands();
+
             TMoverParameters *get_mover();
 
         public:

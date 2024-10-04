@@ -216,21 +216,20 @@ namespace godot {
         }
     }
 
-    void TrainSecuritySystem::_do_process_mover(TMoverParameters *mover, const double delta) {
-    }
+    void TrainSecuritySystem::_do_process_mover(TMoverParameters *mover, const double delta) {}
 
     void TrainSecuritySystem::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {
         TrainPart::_on_command_received(command, p1, p2);
 
-        if(train_controller_node == nullptr) {
+        if (train_controller_node == nullptr) {
             return;
         }
         TMoverParameters *mover = train_controller_node->get_mover();
-        if(!mover) {
+        if (!mover) {
             return;
         }
-        if(command == "security_acknowledge") {
-            if((bool) p1) {
+        if (command == "security_acknowledge") {
+            if ((bool)p1) {
                 mover->SecuritySystem.acknowledge_press();
             } else {
                 mover->SecuritySystem.acknowledge_release();

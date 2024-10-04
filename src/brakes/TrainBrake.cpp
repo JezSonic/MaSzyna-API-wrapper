@@ -215,26 +215,18 @@ namespace godot {
                 D_METHOD("_on_command_brake_level_decrease"), &TrainBrake::_on_command_brake_level_decrease);
     }
 
-    void TrainBrake::_enter_tree() {
-        TrainPart::_enter_tree();
-        if (Engine::get_singleton()->is_editor_hint()) {
-            return;
-        }
+    void TrainBrake::_bind_commands() {
         bind_command("brake_releaser", Callable(this, "_on_command_brake_releaser"));
         bind_command("brake_level_set", Callable(this, "_on_command_brake_level_set"));
         bind_command("brake_level_increase", Callable(this, "_on_command_brake_level_increase"));
         bind_command("brake_level_decrease", Callable(this, "_on_command_brake_level_decrease"));
     }
 
-    void TrainBrake::_exit_tree() {
-        if (Engine::get_singleton()->is_editor_hint()) {
-            return;
-        }
+    void TrainBrake::_unbind_commands() {
         unbind_command("brake_releaser", Callable(this, "_on_command_brake_releaser"));
         unbind_command("brake_level_set", Callable(this, "_on_command_brake_level_set"));
         unbind_command("brake_level_increase", Callable(this, "_on_command_brake_level_increase"));
         unbind_command("brake_level_decrease", Callable(this, "_on_command_brake_level_decrease"));
-        TrainPart::_exit_tree();
     }
 
     void TrainBrake::_on_command_brake_releaser(const Variant &p1, const Variant &p2) {

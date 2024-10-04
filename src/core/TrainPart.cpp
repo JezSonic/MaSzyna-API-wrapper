@@ -36,6 +36,8 @@ namespace godot {
     }
 
     TrainPart::TrainPart() = default;
+    void TrainPart::_bind_commands() {};
+    void TrainPart::_unbind_commands() {};
 
     TMoverParameters *TrainPart::get_mover() {
         if (train_controller_node != nullptr) {
@@ -63,8 +65,10 @@ namespace godot {
                     train_controller_node->connect(
                             TrainController::MOVER_CONFIG_CHANGED_SIGNAL, Callable(this, "update_mover"));
                 }
+                _bind_commands();
             } break;
             case NOTIFICATION_EXIT_TREE: {
+                _unbind_commands();
                 if (train_controller_node != nullptr) {
                     train_controller_node->disconnect(
                             TrainController::MOVER_CONFIG_CHANGED_SIGNAL, Callable(this, "update_mover"));
