@@ -52,9 +52,7 @@ func _process(delta: float) -> void:
 
 
 func _on_brake_level_value_changed(value):
-    print("Dzingdzia bongdzia ", value)
     TrainSystem.broadcast_command("brake_level_set", value, null)
-    print("TrainSystem ", TrainSystem)
 
 func _on_main_decrease_button_up():
     train.receive_command("main_controller_decrease")

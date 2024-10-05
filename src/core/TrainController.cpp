@@ -388,10 +388,8 @@ namespace godot {
         if (command == "battery") {
             mover->BatterySwitch((bool)p1);
         } else if (command == "main_controller_increase") {
-            UtilityFunctions::print("main_controller_increase !");
             mover->IncMainCtrl(1);
         } else if (command == "main_controller_decrease") {
-            UtilityFunctions::print("main_controller_decrease !");
             mover->DecMainCtrl(1);
         } else if (command == "forwarder_increase") {
             mover->DirectionForward();
