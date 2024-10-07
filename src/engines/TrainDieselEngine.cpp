@@ -159,11 +159,13 @@ namespace godot {
     }
 
     void TrainDieselEngine::_bind_commands() {
+        TrainEngine::_bind_commands();
         bind_command("oil_pump", Callable(this, "_on_command_oil_pump"));
         bind_command("fuel_pump", Callable(this, "_on_command_fuel_pump"));
     }
 
     void TrainDieselEngine::_unbind_commands() {
+        TrainEngine::_unbind_commands();
         unbind_command("oil_pump", Callable(this, "_on_command_oil_pump"));
         unbind_command("fuel_pump", Callable(this, "_on_command_fuel_pump"));
     }
