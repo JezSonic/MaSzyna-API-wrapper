@@ -1,5 +1,4 @@
 extends Node
-class_name Console
 
 var enabled := true
 var enable_on_release_build := false : set = set_enable_on_release_build
@@ -178,8 +177,11 @@ func enable():
 
 
 func toggle_console() -> void:
+    set_visible(!control.visible)
+
+func set_visible(visible:bool) -> void:
     if (enabled):
-        control.visible = !control.visible
+        control.visible = visible
     else:
         control.visible = false
 
