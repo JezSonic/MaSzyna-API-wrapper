@@ -223,6 +223,7 @@ namespace godot {
             WARN_PRINT("Possibly unknown command: " + command);
         }
 
+        train->update_state();
         train->emit_command_received_signal(command, p1, p2);
     }
 

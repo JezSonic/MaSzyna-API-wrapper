@@ -55,6 +55,7 @@ namespace godot {
                 &TrainController::_on_command_radio_channel_decrease, DEFVAL(1));
         ClassDB::bind_method(D_METHOD("get_mover_state"), &TrainController::get_mover_state);
         ClassDB::bind_method(D_METHOD("update_mover"), &TrainController::update_mover);
+        ClassDB::bind_method(D_METHOD("update_state"), &TrainController::update_state);
 
         ClassDB::bind_method(
                 D_METHOD("_on_train_part_config_changed"), &TrainController::_on_train_part_config_changed);
@@ -225,6 +226,10 @@ namespace godot {
                 delta, delta, mover->RunningShape, mover->RunningTrack, mover->RunningTraction, mock_location,
                 mock_rotation);
 
+        _handle_mover_update();
+    }
+
+    void TrainController::update_state() {
         _handle_mover_update();
     }
 

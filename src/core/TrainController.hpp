@@ -82,6 +82,7 @@ namespace godot {
             void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
             void bind_command(const String &command, const Callable &callable);
             void unbind_command(const String &command, const Callable &callable);
+            void update_state();
             void update_mover() const;
             void _on_train_part_config_changed(TrainPart *part) const;
 
