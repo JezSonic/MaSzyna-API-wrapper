@@ -290,7 +290,7 @@ func on_text_entered(new_text : String) -> void:
             print_line("[color=light_coral]	ERROR:[/color] Command not found.")
 
     await get_tree().process_frame
-    line_edit.edit()
+    #line_edit.edit()
     line_edit.grab_focus()
     line_edit.grab_click_focus()
 
