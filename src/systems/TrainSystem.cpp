@@ -6,8 +6,8 @@ namespace godot {
         ClassDB::bind_method(D_METHOD("register_train", "train_id", "train"), &TrainSystem::register_train);
         ClassDB::bind_method(D_METHOD("unregister_train", "train_id"), &TrainSystem::unregister_train);
         ClassDB::bind_method(
-                D_METHOD("send_command", "train_id", "command", "p1", "p2"),
-                &TrainSystem::send_command, DEFVAL(Variant()), DEFVAL(Variant()));
+                D_METHOD("send_command", "train_id", "command", "p1", "p2"), &TrainSystem::send_command,
+                DEFVAL(Variant()), DEFVAL(Variant()));
         ClassDB::bind_method(
                 D_METHOD("broadcast_command", "command", "p1", "p2"), &TrainSystem::broadcast_command,
                 DEFVAL(Variant()), DEFVAL(Variant()));
@@ -160,8 +160,8 @@ namespace godot {
         return train_names;
     }
 
-    void TrainSystem::send_command(
-            const String &train_id, const String &command, const Variant &p1, const Variant &p2) {
+    void
+    TrainSystem::send_command(const String &train_id, const String &command, const Variant &p1, const Variant &p2) {
         auto it = trains.find(train_id);
 
         if (it == trains.end()) {
@@ -189,10 +189,28 @@ namespace godot {
                 Callable c = _callables[i];
                 if (c.is_valid()) {
                     Array args;
-                    args.append(p1);
-                    args.append(p2);
+                    int arg_required = 0;
+                    if (p1.get_type() != Variant::NIL) {
+                        arg_required++;
+                    }
+                    if (p2.get_type() != Variant::NIL) {
+                        arg_required++;
+                    }
+                    int argc = c.get_argument_count();
+                    if (argc > 0) {
+                        args.append(p1);
+                    }
+                    if (argc > 1) {
+                        args.append(p2);
+                    }
                     c.callv(args);
                     called++;
+                    /*
+                    if (arg_required != argc) {
+                        UtilityFunctions::push_warning(
+                                "Method ", c.get_object(), "::", c.get_method(), " should handle ", arg_required,
+                                " arguments, but it has ", argc);
+                    }*/
                 } else {
                     UtilityFunctions::push_error("Callable ", c, " is invalid");
                 }
@@ -205,7 +223,6 @@ namespace godot {
             WARN_PRINT("Possibly unknown command: " + command);
         }
 
-        train->_on_command_received(command, p1, p2);
         train->emit_command_received_signal(command, p1, p2);
     }
 

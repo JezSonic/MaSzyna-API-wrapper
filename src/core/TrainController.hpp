@@ -64,17 +64,24 @@ namespace godot {
             static const char *RADIO_CHANNEL_CHANGED;
 
             void _process(double delta) override;
-            void _enter_tree() override;
-            void _exit_tree() override;
-            void _ready() override;
+            void _notification(int p_what);
             Dictionary get_mover_state();
             void
             receive_command(const StringName &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
-            void
-            _on_command_received(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void _on_command_battery(const Variant &enabled);
+            void _on_command_main_controller_increase(const Variant &p1 = Variant());
+            void _on_command_main_controller_decrease(const Variant &p1 = Variant());
+            void _on_command_direction_forward();
+            void _on_command_direction_backward();
+            void _on_command_radio_enable(const Variant &enabled);
+            void _on_command_radio_channel_set(const Variant &channel);
+            void _on_command_radio_channel_increase(const Variant &step = 1);
+            void _on_command_radio_channel_decrease(const Variant &step = 1);
             void emit_command_received_signal(
                     const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
             void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void bind_command(const String &command, const Callable &callable);
+            void unbind_command(const String &command, const Callable &callable);
             void update_mover() const;
             void _on_train_part_config_changed(TrainPart *part) const;
 

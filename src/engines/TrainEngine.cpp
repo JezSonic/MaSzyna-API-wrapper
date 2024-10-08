@@ -10,7 +10,7 @@ namespace godot {
     void TrainEngine::_bind_methods() {
         ClassDB::bind_method(D_METHOD("set_motor_param_table"), &TrainEngine::set_motor_param_table);
         ClassDB::bind_method(D_METHOD("get_motor_param_table"), &TrainEngine::get_motor_param_table);
-        ClassDB::bind_method(D_METHOD("_on_command_main_switch", "p1", "p2"), &TrainEngine::_on_command_main_switch);
+        ClassDB::bind_method(D_METHOD("_on_command_main_switch", "enabled"), &TrainEngine::_on_command_main_switch);
         ADD_PROPERTY(
                 PropertyInfo(
                         Variant::ARRAY, "motor_param_table", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT,
@@ -77,10 +77,10 @@ namespace godot {
         motor_param_table.append_array(p_value);
     }
 
-    void TrainEngine::_on_command_main_switch(const Variant &p1, const Variant &p2) {
+    void TrainEngine::_on_command_main_switch(const Variant &enabled) {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER(mover);
-        mover->MainSwitch((bool)p1);
+        mover->MainSwitch((bool)(int)enabled);
     }
 
     void TrainEngine::_bind_commands() {

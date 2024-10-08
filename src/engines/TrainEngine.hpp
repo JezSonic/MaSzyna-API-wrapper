@@ -23,7 +23,7 @@ namespace godot {
         public:
             TypedArray<Dictionary> get_motor_param_table();
             void set_motor_param_table(const TypedArray<Dictionary> p_wwlist);
-            void _on_command_main_switch(const Variant &p1, const Variant &p2);
+            void _on_command_main_switch(const Variant &p1);
 
             TrainEngine();
             ~TrainEngine() override = default;

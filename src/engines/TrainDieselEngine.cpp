@@ -27,8 +27,8 @@ namespace godot {
 
         ClassDB::bind_method(D_METHOD("set_wwlist"), &TrainDieselEngine::set_wwlist);
         ClassDB::bind_method(D_METHOD("get_wwlist"), &TrainDieselEngine::get_wwlist);
-        ClassDB::bind_method(D_METHOD("_on_command_fuel_pump"), &TrainDieselEngine::_on_command_fuel_pump);
-        ClassDB::bind_method(D_METHOD("_on_command_oil_pump"), &TrainDieselEngine::_on_command_oil_pump);
+        ClassDB::bind_method(D_METHOD("_on_command_fuel_pump", "enabled"), &TrainDieselEngine::_on_command_fuel_pump);
+        ClassDB::bind_method(D_METHOD("_on_command_oil_pump", "enabled"), &TrainDieselEngine::_on_command_oil_pump);
         ADD_PROPERTY(
                 PropertyInfo(
                         Variant::ARRAY, "wwlist", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "TypedArray<Array>"),
@@ -146,16 +146,16 @@ namespace godot {
         wwlist.append_array(p_wwlist);
     }
 
-    void TrainDieselEngine::_on_command_oil_pump(const Variant &p1, const Variant &p2) {
+    void TrainDieselEngine::_on_command_oil_pump(const Variant &enabled) {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER(mover);
-        mover->OilPumpSwitch((bool)p1);
+        mover->OilPumpSwitch((bool)(int)enabled);
     }
 
-    void TrainDieselEngine::_on_command_fuel_pump(const Variant &p1, const Variant &p2) {
+    void TrainDieselEngine::_on_command_fuel_pump(const Variant &enabled) {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER(mover);
-        mover->FuelPumpSwitch((bool)p1);
+        mover->FuelPumpSwitch((bool)(int)enabled);
     }
 
     void TrainDieselEngine::_bind_commands() {

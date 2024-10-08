@@ -38,8 +38,8 @@ namespace godot {
             TypedArray<Array> get_wwlist();
             void set_wwlist(const TypedArray<Array> p_wwlist);
 
-            void _on_command_oil_pump(const Variant &p1, const Variant &p2);
-            void _on_command_fuel_pump(const Variant &p1, const Variant &p2);
+            void _on_command_oil_pump(const Variant &enbled);
+            void _on_command_fuel_pump(const Variant &enabled);
 
             TrainDieselEngine();
             ~TrainDieselEngine() override = default;

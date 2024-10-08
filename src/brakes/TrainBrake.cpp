@@ -207,8 +207,10 @@ namespace godot {
         BIND_ENUM_CONSTANT(BRAKE_VALVE_CV1_R);
         BIND_ENUM_CONSTANT(BRAKE_VALVE_OTHER);
 
-        ClassDB::bind_method(D_METHOD("_on_command_brake_releaser"), &TrainBrake::_on_command_brake_releaser);
-        ClassDB::bind_method(D_METHOD("_on_command_brake_level_set"), &TrainBrake::_on_command_brake_level_set);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_brake_releaser", "enabled"), &TrainBrake::_on_command_brake_releaser);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_brake_level_set", "level"), &TrainBrake::_on_command_brake_level_set);
         ClassDB::bind_method(
                 D_METHOD("_on_command_brake_level_increase"), &TrainBrake::_on_command_brake_level_increase);
         ClassDB::bind_method(
@@ -229,25 +231,25 @@ namespace godot {
         unbind_command("brake_level_decrease", Callable(this, "_on_command_brake_level_decrease"));
     }
 
-    void TrainBrake::_on_command_brake_releaser(const Variant &p1, const Variant &p2) {
+    void TrainBrake::_on_command_brake_releaser(const Variant &p1) {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER_BRAKE(mover);
-        mover->BrakeReleaser((bool)p1 ? 1 : 0);
+        mover->BrakeReleaser((int)p1 ? 1 : 0);
     }
 
-    void TrainBrake::_on_command_brake_level_set(const Variant &p1, const Variant &p2) {
+    void TrainBrake::_on_command_brake_level_set(const Variant &p1) {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER_BRAKE(mover);
         mover->BrakeLevelSet((float)p1);
     }
 
-    void TrainBrake::_on_command_brake_level_increase(const Variant &p1, const Variant &p2) {
+    void TrainBrake::_on_command_brake_level_increase() {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER_BRAKE(mover);
         mover->IncBrakeLevel();
     }
 
-    void TrainBrake::_on_command_brake_level_decrease(const Variant &p1, Variant const &p2) {
+    void TrainBrake::_on_command_brake_level_decrease() {
         TMoverParameters *mover = get_mover();
         ASSERT_MOVER_BRAKE(mover);
         mover->DecBrakeLevel();

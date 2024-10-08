@@ -199,10 +199,10 @@ namespace godot {
             void set_rig_effectiveness(double p_rig_effectiveness);
             double get_rig_effectiveness() const;
 
-            void _on_command_brake_releaser(const Variant &p1, const Variant &p2);
-            void _on_command_brake_level_set(const Variant &p1, const Variant &p2);
-            void _on_command_brake_level_increase(const Variant &p1, const Variant &p2);
-            void _on_command_brake_level_decrease(const Variant &p1, const Variant &p2);
+            void _on_command_brake_releaser(const Variant &p1);
+            void _on_command_brake_level_set(const Variant &p1);
+            void _on_command_brake_level_increase();
+            void _on_command_brake_level_decrease();
 
             TrainBrake();
             ~TrainBrake() override = default;
