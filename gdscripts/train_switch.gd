@@ -173,7 +173,7 @@ func _handle_position_change(prev, current) -> int:
     if _controller:
         var cmd = command_increase if current > prev else command_decrease
         if cmd:
-            _controller.receive_command(cmd, true)
+            _controller.receive_command(cmd)
         if command_set:
             _controller.receive_command(command_set, current)
 

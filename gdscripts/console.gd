@@ -53,6 +53,7 @@ func _ready() -> void:
     line_edit.anchor_right = 1.0
     line_edit.anchor_bottom = 0.5
     line_edit.placeholder_text = "Enter \"help\" for instructions"
+    line_edit.focus_mode = Control.FOCUS_ALL
     control.add_child(line_edit)
     line_edit.text_submitted.connect(on_text_entered)
     line_edit.text_changed.connect(on_line_edit_text_changed)
@@ -263,6 +264,8 @@ func on_text_entered(new_text : String) -> void:
     reset_autocomplete()
     line_edit.clear()
 
+
+
     if not new_text.strip_edges().is_empty():
         add_input_history(new_text)
         print_line("[i]> " + new_text + "[/i]")
@@ -280,14 +283,16 @@ func on_text_entered(new_text : String) -> void:
                 return
 
             # Functions fail to call if passed the incorrect number of arguments, so fill out with blank strings.
-            while (arguments.size() < console_commands[text_command].arguments.size()):
-                arguments.append("")
 
             console_commands[text_command].function.callv(arguments)
         else:
             console_unknown_command.emit(text_command)
             print_line("[color=light_coral]	ERROR:[/color] Command not found.")
 
+    await get_tree().process_frame
+    line_edit.edit()
+    line_edit.grab_focus()
+    line_edit.grab_click_focus()
 
 func on_line_edit_text_changed(new_text : String) -> void:
     reset_autocomplete()

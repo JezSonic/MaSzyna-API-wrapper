@@ -29,7 +29,9 @@ func console_list_trains():
     Console.print_line("%s" % "\n".join(TrainSystem.get_registered_trains()))
 
 func console_list_train_commands():
-    Console.print_line("%s" % "\n".join(TrainSystem.get_supported_commands()))
+    var commands = TrainSystem.get_supported_commands()
+    commands.sort()
+    Console.print_line("%s" % "\n".join(commands))
 
 func console_print_train_log(train_id, loglevel, line):
     if loglevel >= TrainSystem.TrainLogLevel.TRAINLOGLEVEL_ERROR:
