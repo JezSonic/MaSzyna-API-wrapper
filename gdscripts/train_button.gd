@@ -70,6 +70,9 @@ func _ready():
     connect("pushed_changed", self._on_pushed_changed)
 
 func _input(event):
+    if Console.is_visible():
+        return
+
     if action:
         if monostable:
 

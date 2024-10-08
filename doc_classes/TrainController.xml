@@ -9,6 +9,15 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="broadcast_command">
+			<return type="void" />
+			<param index="0" name="command" type="String" />
+			<param index="1" name="p1" type="Variant" default="null" />
+			<param index="2" name="p2" type="Variant" default="null" />
+			<description>
+				Broadcasts command to all trains (including self)
+			</description>
+		</method>
 		<method name="get_mover_state">
 			<return type="Dictionary" />
 			<description>
@@ -57,7 +66,7 @@
 			Actual state of the train
 		</member>
 		<member name="type_name" type="String" setter="set_type_name" getter="get_type_name" default="&quot;&quot;">
-			Train type name 
+			Train type name
 		</member>
 	</members>
 	<signals>
@@ -66,7 +75,7 @@
 			<param index="1" name="p1" type="Variant" />
 			<param index="2" name="p2" type="Variant" />
 			<description>
-				Train received a command
+				Emitted when train receives a command
 			</description>
 		</signal>
 		<signal name="mover_config_changed">
@@ -78,6 +87,12 @@
 			<param index="0" name="is_powered" type="bool" />
 			<description>
 				Train power state changed
+			</description>
+		</signal>
+		<signal name="radio_channel_changed">
+			<param index="0" name="channel" type="int" />
+			<description>
+				Emitted when selected radio channel changes
 			</description>
 		</signal>
 		<signal name="radio_toggled">

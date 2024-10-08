@@ -1,6 +1,7 @@
 #include "register_types.h"
 
 #include <gdextension_interface.h>
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
@@ -14,8 +15,11 @@
 #include "engines/TrainElectricSeriesEngine.hpp"
 #include "engines/TrainEngine.hpp"
 #include "systems/TrainSecuritySystem.hpp"
+#include "systems/TrainSystem.hpp"
 
 using namespace godot;
+
+TrainSystem *train_system_singleton = nullptr;
 
 void initialize_libmaszyna_module(ModuleInitializationLevel p_level) {
     if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {
@@ -33,12 +37,22 @@ void initialize_libmaszyna_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(TrainElectricSeriesEngine);
         GDREGISTER_CLASS(TrainController);
         GDREGISTER_CLASS(TrainSecuritySystem);
+        GDREGISTER_CLASS(TrainSystem);
+
+        train_system_singleton = memnew(TrainSystem);
+        Engine::get_singleton()->register_singleton("TrainSystem", train_system_singleton);
     }
 }
 
 void uninitialize_libmaszyna_module(ModuleInitializationLevel p_level) {
     if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
         return;
+    }
+
+    if (train_system_singleton) {
+        Engine::get_singleton()->unregister_singleton("TrainSystem");
+        // memdelete(train_system_singleton);
+        // train_system_singleton = nullptr;
     }
 }
 

@@ -1,6 +1,13 @@
 #pragma once
+#include <functional>
 #include <godot_cpp/classes/node.hpp>
+#include "../systems/TrainSystem.hpp"
 #include "TrainController.hpp"
+
+#define ASSERT_MOVER(mover_ptr)                                                                                        \
+    if ((mover_ptr) == nullptr) {                                                                                      \
+        return;                                                                                                        \
+    }
 
 namespace godot {
     class TrainPart : public Node {
@@ -12,6 +19,7 @@ namespace godot {
             Dictionary state;
 
         protected:
+            void _notification(int p_what);
             bool enabled = true;
             bool enabled_changed = false;
             bool _dirty = false;
@@ -29,7 +37,7 @@ namespace godot {
             /* Transfers data from Godot's node to original/internal Mover instance.
              * `mover` is always set */
 
-            virtual void _do_update_internal_mover(TMoverParameters *mover) = 0;
+            virtual void _do_update_internal_mover(TMoverParameters *mover);
 
             /* Transfers state from the original/internal Mover instance to Godot's Dictionary.
              * `mover` and `state` are always set
@@ -39,14 +47,26 @@ namespace godot {
 
             virtual void _do_process_mover(TMoverParameters *mover, double delta) = 0;
 
+            virtual void _bind_commands();
+            virtual void _unbind_commands();
+
+            TMoverParameters *get_mover();
+
         public:
-            void _ready() override;
-            void _enter_tree() override;
-            void _exit_tree() override;
             void _process(double delta) override;
             virtual void _process_mover(double delta);
             void on_command_received(const String &command, const Variant &p1, const Variant &p2);
             virtual void _on_command_received(const String &command, const Variant &p1, const Variant &p2);
+
+            void bind_command(const String &command, const Callable &callback);
+            void unbind_command(const String &command, const Callable &callback);
+            void send_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void broadcast_command(const String &command, const Variant &p1 = Variant(), const Variant &p2 = Variant());
+            void log(const TrainSystem::TrainLogLevel level, const String &line);
+            void log_debug(const String &line);
+            void log_info(const String &line);
+            void log_warning(const String &line);
+            void log_error(const String &line);
 
             void set_enabled(bool p_value);
             bool get_enabled();

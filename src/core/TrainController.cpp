@@ -8,6 +8,7 @@
 #include "../core/TrainPart.hpp"
 #include "../engines/TrainEngine.hpp"
 #include "../systems/TrainSecuritySystem.hpp"
+#include "../systems/TrainSystem.hpp"
 
 namespace godot {
 
@@ -26,8 +27,35 @@ namespace godot {
                 D_METHOD("receive_command", "command", "p1", "p2"), &TrainController::receive_command,
                 DEFVAL(Variant()), DEFVAL(Variant()));
 
+        ClassDB::bind_method(
+                D_METHOD("broadcast_command", "command", "p1", "p2"), &TrainController::broadcast_command,
+                DEFVAL(Variant()), DEFVAL(Variant()));
+
+
+        ClassDB::bind_method(D_METHOD("bind_command", "command", "callable"), &TrainController::bind_command);
+        ClassDB::bind_method(D_METHOD("unbind_command", "command", "callable"), &TrainController::unbind_command);
+        ClassDB::bind_method(D_METHOD("_on_command_battery", "enabled"), &TrainController::_on_command_battery);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_main_controller_increase", "step"),
+                &TrainController::_on_command_main_controller_increase, DEFVAL(1));
+        ClassDB::bind_method(
+                D_METHOD("_on_command_main_controller_decrease", "step"),
+                &TrainController::_on_command_main_controller_decrease, DEFVAL(1));
+        ClassDB::bind_method(
+                D_METHOD("_on_command_direction_forward"), &TrainController::_on_command_direction_forward);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_direction_backward"), &TrainController::_on_command_direction_backward);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_radio_enable", "enabled"), &TrainController::_on_command_radio_enable);
+        ClassDB::bind_method(
+                D_METHOD("_on_command_radio_channel_increase", "step"),
+                &TrainController::_on_command_radio_channel_increase, DEFVAL(1));
+        ClassDB::bind_method(
+                D_METHOD("_on_command_radio_channel_decrease", "step"),
+                &TrainController::_on_command_radio_channel_decrease, DEFVAL(1));
         ClassDB::bind_method(D_METHOD("get_mover_state"), &TrainController::get_mover_state);
         ClassDB::bind_method(D_METHOD("update_mover"), &TrainController::update_mover);
+        ClassDB::bind_method(D_METHOD("update_state"), &TrainController::update_state);
 
         ClassDB::bind_method(
                 D_METHOD("_on_train_part_config_changed"), &TrainController::_on_train_part_config_changed);
@@ -126,17 +154,51 @@ namespace godot {
                                                  // disregarded; neglecting it may lead to errors
         }
     }
-    void TrainController::_ready() {
+    void TrainController::bind_command(const String &command, const Callable &callable) {
+        TrainSystem::get_instance()->bind_command(get_name().to_lower(), command, callable);
+    }
+
+    void TrainController::unbind_command(const String &command, const Callable &callable) {
+        TrainSystem::get_instance()->unbind_command(get_name().to_lower(), command, callable);
+    }
+
+    void TrainController::_notification(int p_what) {
         if (Engine::get_singleton()->is_editor_hint()) {
             return;
         }
+        switch (p_what) {
+            case NOTIFICATION_ENTER_TREE:
+                TrainSystem::get_instance()->register_train(this->get_name().to_lower(), this);
+                bind_command("battery", Callable(this, "_on_command_battery"));
+                bind_command("main_controller_increase", Callable(this, "_on_command_main_controller_increase"));
+                bind_command("main_controller_decrease", Callable(this, "_on_command_main_controller_decrease"));
+                bind_command("direction_forward", Callable(this, "_on_command_direction_forward"));
+                bind_command("direction_backward", Callable(this, "_on_command_direction_backward"));
+                bind_command("radio", Callable(this, "_on_command_radio_enable"));
+                bind_command("radio_channel_set", Callable(this, "_on_command_radio_channel_set"));
+                bind_command("radio_channel_increase", Callable(this, "_on_command_radio_channel_increase"));
+                bind_command("radio_channel_decrease", Callable(this, "_on_command_radio_channel_decrease"));
+                break;
+            case NOTIFICATION_EXIT_TREE:
+                TrainSystem::get_instance()->unregister_train(this->get_name().to_lower());
+                unbind_command("battery", Callable(this, "_on_command_battery"));
+                unbind_command("main_controller_increase", Callable(this, "_on_command_main_controller_increase"));
+                unbind_command("main_controller_decrease", Callable(this, "_on_command_main_controller_decrease"));
+                unbind_command("direction_forward", Callable(this, "_on_command_direction_forward"));
+                unbind_command("direction_backward", Callable(this, "_on_command_direction_backward"));
+                unbind_command("radio", Callable(this, "_on_command_radio_enable"));
+                unbind_command("radio_channel_set", Callable(this, "_on_command_radio_channel_set"));
+                unbind_command("radio_channel_increase", Callable(this, "_on_command_radio_channel_increase"));
+                unbind_command("radio_channel_decrease", Callable(this, "_on_command_radio_channel_decrease"));
+                break;
+            case NOTIFICATION_READY:
+                initialize_mover();
+                UtilityFunctions::print("TrainController::_ready() signals connected to train parts");
 
-        initialize_mover();
-
-        UtilityFunctions::print("TrainController::_ready() signals connected to train parts");
-
-        emit_signal(POWER_CHANGED_SIGNAL, prev_is_powered);
-        emit_signal(RADIO_CHANNEL_CHANGED, prev_radio_channel);
+                emit_signal(POWER_CHANGED_SIGNAL, prev_is_powered);
+                emit_signal(RADIO_CHANNEL_CHANGED, prev_radio_channel);
+                break;
+        }
     }
 
     void TrainController::_update_mover_config_if_dirty() {
@@ -167,6 +229,10 @@ namespace godot {
         _handle_mover_update();
     }
 
+    void TrainController::update_state() {
+        _handle_mover_update();
+    }
+
     void TrainController::_handle_mover_update() {
         state.merge(get_mover_state(), true);
 
@@ -176,7 +242,7 @@ namespace godot {
             emit_signal(POWER_CHANGED_SIGNAL, prev_is_powered);
         }
 
-        const bool new_radio_enabled = state.get("radio_enabled", false);
+        const bool new_radio_enabled = state.get("radio_enabled", false) && new_is_powered;
         if (prev_radio_enabled != new_radio_enabled) {
             prev_radio_enabled = new_radio_enabled; // FIXME: I don't like this
             emit_signal(RADIO_TOGGLED, new_radio_enabled);
@@ -319,6 +385,7 @@ namespace godot {
 
         /* FIXME: move to TrainRadio section? */
         internal_state["radio_enabled"] = mover->Radio;
+        internal_state["radio_powered"] = mover->Radio && (mover->Power24vIsAvailable || mover->Power110vIsAvailable);
         internal_state["radio_channel"] = radio_channel;
 
         /* FIXME: move to TrainPower section */
@@ -344,38 +411,58 @@ namespace godot {
         return state;
     }
 
-    void TrainController::receive_command(const StringName &command, const Variant &p1, const Variant &p2) {
-        _on_command_received(String(command), p1, p2);
+    void TrainController::emit_command_received_signal(const String &command, const Variant &p1, const Variant &p2) {
         emit_signal(COMMAND_RECEIVED, command, p1, p2);
-        if (mover != nullptr) {
-            _handle_mover_update();
-        }
     }
 
-    void TrainController::_on_command_received(const String &command, const Variant &p1, const Variant &p2) {
-        if (!mover) {
-            return;
-        }
-        if (command == "battery") {
-            mover->BatterySwitch((bool)p1);
-        } else if (command == "main_controller_increase") {
-            UtilityFunctions::print("main_controller_increase !");
-            mover->IncMainCtrl(1);
-        } else if (command == "main_controller_decrease") {
-            UtilityFunctions::print("main_controller_decrease !");
-            mover->DecMainCtrl(1);
-        } else if (command == "forwarder_increase") {
-            mover->DirectionForward();
-        } else if (command == "forwarder_decrease") {
-            mover->DirectionBackward();
-        } else if (command == "radio_channel_increase") {
-            radio_channel = Math::clamp(radio_channel + 1, radio_channel_min, radio_channel_max);
-        } else if (command == "radio_channel_decrease") {
-            radio_channel = Math::clamp(radio_channel - 1, radio_channel_min, radio_channel_max);
-        } else if (command == "radio_channel_set") {
-            radio_channel = Math::clamp((int)p1, radio_channel_min, radio_channel_max);
-        } else if (command == "radio") {
-            mover->Radio = (bool)p1;
-        }
+    void TrainController::broadcast_command(const String &command, const Variant &p1, const Variant &p2) {
+        TrainSystem::get_instance()->broadcast_command(command, p1, p2);
+    }
+
+    void TrainController::receive_command(const StringName &command, const Variant &p1, const Variant &p2) {
+        TrainSystem::get_instance()->send_command(this->get_name().to_lower(), String(command), p1, p2);
+        /*
+        _on_command_received(String(command), p1, p2);
+        if (mover != nullptr) {
+            _handle_mover_update();
+        }*/
+    }
+
+    void TrainController::_on_command_battery(const Variant &enabled) {
+        mover->BatterySwitch((bool)(int)enabled);
+    }
+
+    void TrainController::_on_command_main_controller_increase(const Variant &p1) {
+        mover->IncMainCtrl((int)p1 ? (int)p1 : 1);
+    }
+
+    void TrainController::_on_command_main_controller_decrease(const Variant &p1) {
+        mover->DecMainCtrl((int)p1 ? (int)p1 : 1);
+    }
+
+    void TrainController::_on_command_direction_forward() {
+        mover->DirectionForward();
+    }
+
+    void TrainController::_on_command_direction_backward() {
+        mover->DirectionBackward();
+    }
+
+    void TrainController::_on_command_radio_channel_increase(const Variant &p1) {
+        int step = (int)p1 ? (int)p1 : 1;
+        radio_channel = Math::clamp(radio_channel + step, radio_channel_min, radio_channel_max);
+    }
+
+    void TrainController::_on_command_radio_channel_decrease(const Variant &p1) {
+        int step = (int)p1 ? (int)p1 : 1;
+        radio_channel = Math::clamp(radio_channel - step, radio_channel_min, radio_channel_max);
+    }
+
+    void TrainController::_on_command_radio_channel_set(const Variant &p1) {
+        radio_channel = Math::clamp((int)p1, radio_channel_min, radio_channel_max);
+    }
+
+    void TrainController::_on_command_radio_enable(const Variant &p1) {
+        mover->Radio = (bool)(int)p1;
     }
 } // namespace godot

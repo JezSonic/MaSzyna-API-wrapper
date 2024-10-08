@@ -2,10 +2,10 @@ extends Control
 
 var _t:float = 0.0
 
-@onready var train = $SM42_V1
-@onready var brake = $SM42_V1/Brake
-@onready var engine = $SM42_V1/StonkaDieselEngine
-@onready var security = $SM42_V1/TrainSecuritySystem
+@onready var train = $SM42
+@onready var brake = $SM42/Brake
+@onready var engine = $SM42/StonkaDieselEngine
+@onready var security = $SM42/TrainSecuritySystem
 
 
 # Called when the node enters the scene tree for the first time.
@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 
 
 func _on_brake_level_value_changed(value):
-    train.receive_command("brake_level_set", value)
+    TrainSystem.broadcast_command("brake_level_set", value, null)
 
 func _on_main_decrease_button_up():
     train.receive_command("main_controller_decrease")
